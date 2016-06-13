@@ -171,7 +171,7 @@ public class DataPointController {
 
         // FIXME test validation
         if (dataPointService.exists(dataPoint.getHeader().getId())) {
-            return new ResponseEntity<>(CONFLICT);
+            return new ResponseEntity<>("test",CONFLICT);
         }
 
         String endUserId = getEndUserId(authentication);
@@ -180,7 +180,7 @@ public class DataPointController {
         setUserId(dataPoint.getHeader(), endUserId);
 
         dataPointService.save(dataPoint);
-
+	
         return new ResponseEntity<>(CREATED);
     }
 
