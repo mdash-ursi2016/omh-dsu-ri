@@ -100,6 +100,19 @@ securitySchemes:
       409:
         description: a data point with the same identifier already exists
 
+  /multi:
+    post:
+      description: create multiple data points
+      securedBy: [oauth_2_0]
+      body:
+        application/json:
+	  schema: [ !include data-point ]
+      respondes:
+	201:
+	  description: the data points have been created
+	409:
+	  description: one or more data points with the same identifier(s) already exists
+
   /{id}:
     uriParameters:
       id:
