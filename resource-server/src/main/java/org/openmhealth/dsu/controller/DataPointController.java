@@ -34,6 +34,7 @@ import javax.validation.Valid;
 import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.util.Arrays.*;
 
 import static org.openmhealth.dsu.configuration.OAuth2Properties.*;
 import static org.springframework.http.HttpStatus.*;
@@ -160,6 +161,32 @@ public class DataPointController {
     }
 
     /**
+     * Write multiple data points.
+     *
+     * @param dataPoints the data points to write
+     */
+    // only allow clients with write scope to write data points
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
+    @RequestMapping(value = "/dataPoints/multi", method = POST, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> writeDataPoints(@RequestBody @Valid DataPoint[] dataPoints, Authentication authentication) {
+	String endUserId = getEndUserId(authentication);
+
+	for (int i=0; i< dataPoints.length; i++) {
+	    // Set the owner of the data point to be the user associated with the access token
+	    setUserId(dataPoints[i].getHeader(), endUserId);
+	    
+	    if (dataPointService.exists(dataPoints[i].getHeader().getId())) {
+		// Returns which index of the array had a conflicting data point
+		return new ResponseEntity<>("Index " + i + " already exists.", CONFLICT);
+	    }
+	}
+
+	dataPointService.save(Arrays.asList(dataPoints));
+
+	return new ResponseEntity<>(CREATED);
+    }
+
+    /**
      * Writes a data point.
      *
      * @param dataPoint the data point to write
@@ -171,7 +198,7 @@ public class DataPointController {
 
         // FIXME test validation
         if (dataPointService.exists(dataPoint.getHeader().getId())) {
-            return new ResponseEntity<>("test",CONFLICT);
+            return new ResponseEntity<>(CONFLICT);
         }
 
         String endUserId = getEndUserId(authentication);
