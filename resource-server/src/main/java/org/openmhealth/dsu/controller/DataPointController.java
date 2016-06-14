@@ -35,6 +35,8 @@ import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.Arrays;
+import java.util.List;
+import java.util.LinkedList;
 
 import static org.openmhealth.dsu.configuration.OAuth2Properties.*;
 import static org.springframework.http.HttpStatus.*;
@@ -166,6 +168,7 @@ public class DataPointController {
      * @param dataPoints the data points to write
      */
     // only allow clients with write scope to write data points
+    /* ---- Multi-point-POST.v1 ----
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
     @RequestMapping(value = "/dataPoints/multi", method = POST, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> writeDataPoints(@RequestBody @Valid DataPoint[] dataPoints, Authentication authentication) {
@@ -184,6 +187,36 @@ public class DataPointController {
 	dataPointService.save(Arrays.asList(dataPoints));
 
 	return new ResponseEntity<>(CREATED);
+    }
+    */
+
+    /* ---- Multi-point-POST.v2 ---- */
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
+    @RequestMapping(value = "/dataPoints/multi", method = POST, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> writeDataPoints(@RequestBody @Valid DataPoint[] dataPoints, Authentication authentication) {
+	String endUserId = getEndUserId(authentication);
+	List<DataPoint> dpList = new LinkedList<DataPoint>();
+	List<String> conflictIds = new LinkedList<String>();
+	
+	for (int i=0; i< dataPoints.length; i++) {
+	    // Set the owner of the data point to be the user associated with the access token
+	    setUserId(dataPoints[i].getHeader(), endUserId);
+
+	    if (dataPointService.exists(dataPoints[i].getHeader().getId())) {
+		// Store the ids of the conflicting data point in a list
+		conflictIds.add(dataPoints[i].getHeader().getId());
+	    } else {
+		dpList.add(dataPoints[i]);
+	    }
+	}
+	// Save the data points that did not conflict
+	dataPointService.save(dpList);
+
+	if (conflictIds.isEmpty()) {
+	    return new ResponseEntity<>(CREATED);
+	} else {
+	    return new ResponseEntity<>("Conflicting data point IDs: " + conflictIds + ". " + dpList.size() + " were created.",CONFLICT);
+	}
     }
 
     /**
