@@ -1,0 +1,10 @@
+<html>
+  <body>
+    <form action="https://143.229.6.40:49160/process_post" method="GET">
+      Username: <input type="text" name="username">  <br>
+
+      Password: <input type="password" name="password">
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>
