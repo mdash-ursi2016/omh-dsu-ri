@@ -28,12 +28,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
  *
  * @author Emerson Farrugia
  */
-
-@RequestMapping("/") // Included a resource endpoint for testing purposes
-public String home() {
-    return "Hello, World!";
-}
-
 @Configuration
 @EnableResourceServer
 public class OAuth2ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
