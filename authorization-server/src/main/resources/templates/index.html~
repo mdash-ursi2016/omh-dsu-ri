@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Home Page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <div th:if="${user}">
+      <p th:text="'Hello, ' + ${name} + '!'" />
+      <form th:action="@{/logout}" method="post">
+	<input type="submit" value="Logout"/>
+      </form>
+    </div>
+    <h1> Good day to you!</h1>
+    <p> Please be sure to authenticate so that you can access secured pages. </p>
+    <ul>
+      <li>Go to the <a href="/user/visualization" th:href="@{/user/visualization}"> secured visualizations</a></li>
+      <li>Go to the <a href="login" th:href="@{/login}"> login page </a></li>
+      <li>Go to the <a href="/signup" th:href="@{/signup}"> user registration page</a></li>
+    </ul>
+  </body>
+</html>

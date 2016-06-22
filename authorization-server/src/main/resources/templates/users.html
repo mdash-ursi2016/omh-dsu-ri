@@ -1,0 +1,46 @@
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>User Registration</title>
+    <meta charset="utf-8" />
+    <script type="text/javascript">
+      newUser = function() {
+      var data = JSON.stringify({
+      "username": ""+username.value+"",
+      "password": ""+password.value+""
+      });
+      var xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
+      xhr.addEventListener("readystatechange", function () {
+      if (this.readyState===4) {
+        if (this.status===200) {
+        document.getElementById("res").innerHTML= "Success! User has been created \n";
+        } else {
+        document.getElementById("res").innerHTML= "Whoops! Try again. \n";
+        }
+      }
+      });
+      xhr.open("POST", "http://143.229.6.40:8082/users");
+      xhr.setRequestHeader("accept", "application/json");
+      xhr.setRequestHeader("content-type", "application/json");
+      xhr.setRequestHeader("cache-control", "no-cache");
+      xhr.send(data);
+
+      document.getElementById("form").reset();
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Sign Up with MDash</h1>
+    <p>Example user: user / password </p>
+    <form id="form">
+      <div id="res"></div>
+      <label for="username">Username</label>:
+      <input type="text" id="username" name="username" required="true" autofocus="true" autocorrect="off" /> <br/>
+      <label for="password">Password</label>:
+      <input type="password" id="password" name="password" required="true"/> <br/>
+      <button type="button" onclick="newUser()"> Submit </button>
+    </form>
+    <p><a href="/" th:href="@{/}"> Back to home page</a></p>
+  </body>
+</html>
