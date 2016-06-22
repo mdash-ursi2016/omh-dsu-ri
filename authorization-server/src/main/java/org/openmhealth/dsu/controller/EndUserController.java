@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 
 /**
@@ -50,6 +51,23 @@ public class EndUserController {
     @Autowired
     private EndUserService endUserService;
 
+    /**
+    * Directs users to the signup page   
+    * @return a String for the signup page
+    */
+    @RequestMapping(value = "/users", method = GET)
+    public String signup() {
+        return "users";
+      }
+
+    /**
+     * Directs users to the visualizations page
+     * @return a String for the visualizations page
+     */
+    @RequestMapping(value = "/users/visualization", method = GET)
+    public String visualization() {
+	return "users/visualization";
+    }
 
     /**
      * Registers a new user.

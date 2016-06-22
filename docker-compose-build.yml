@@ -23,8 +23,3 @@ resourceserver:
     - postgres:omh-postgres
   ports:
     - "8083:8083"
-
-webapp:
-  build: web_app/src
-  ports:
-    - "49160:8000"

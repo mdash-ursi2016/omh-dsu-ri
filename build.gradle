@@ -84,12 +84,13 @@ configure([
         compile project(':shared')
         compile 'org.apache.httpcomponents:httpclient'
         compile "org.springframework.boot:spring-boot-starter-jetty"
-        compile("org.springframework.boot:spring-boot-starter-web") {
+	compile "org.springframework.boot:spring-boot-starter-thymeleaf"
+	compile("org.springframework.boot:spring-boot-starter-web") {
             exclude module: "spring-boot-starter-tomcat"
         }
         compile 'org.springframework:spring-web'
         compile 'org.springframework:spring-webmvc'
-
+	
         // you can comment out any dependencies you know you don't need after this point
         compile 'org.mongodb:mongo-java-driver'
         // compile 'mysql:mysql-connector-java'
