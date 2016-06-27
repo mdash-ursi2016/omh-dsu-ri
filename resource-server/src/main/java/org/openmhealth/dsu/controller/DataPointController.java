@@ -65,7 +65,7 @@ public class DataPointController {
     public static final String RESULT_OFFSET_PARAMETER = "skip";
     public static final String RESULT_LIMIT_PARAMETER = "limit";
     public static final String DEFAULT_RESULT_LIMIT = "100";
-
+    
     @Autowired
     private DataPointService dataPointService;
 
@@ -168,28 +168,6 @@ public class DataPointController {
      * @param dataPoints the data points to write
      */
     // only allow clients with write scope to write data points
-    /* ---- Multi-point-POST.v1 ----
-    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
-    @RequestMapping(value = "/dataPoints/multi", method = POST, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> writeDataPoints(@RequestBody @Valid DataPoint[] dataPoints, Authentication authentication) {
-	String endUserId = getEndUserId(authentication);
-
-	for (int i=0; i< dataPoints.length; i++) {
-	    // Set the owner of the data point to be the user associated with the access token
-	    setUserId(dataPoints[i].getHeader(), endUserId);
-	    
-	    if (dataPointService.exists(dataPoints[i].getHeader().getId())) {
-		// Returns which index of the array had a conflicting data point
-		return new ResponseEntity<>("Index " + i + " already exists.", CONFLICT);
-	    }
-	}
-
-	dataPointService.save(Arrays.asList(dataPoints));
-
-	return new ResponseEntity<>(CREATED);
-    }
-    */
-
     /* ---- Multi-point-POST.v2 ---- */
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
     @RequestMapping(value = "/dataPoints/multi", method = POST, consumes = APPLICATION_JSON_VALUE)
@@ -256,6 +234,15 @@ public class DataPointController {
         }
     }
 
+    /*
+     * Test
+     */
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
+    @RequestMapping(value = "/test")
+    public ResponseEntity<?> testFxn(@RequestBody String str, Authentication authentication) {
+	return new ResponseEntity<>("I got your string: " + str, CREATED);
+    }
+    
     /**
      * Deletes a data point.
      *

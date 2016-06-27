@@ -35,8 +35,8 @@ securitySchemes:
           description: the access token is not valid or has not been granted the required scope
 
     settings:
-      authorizationUri: http://domain/oauth/authorize
-      accessTokenUri: http://domain/oauth/token
+      authorizationUri: https://domain/oauth/authorize
+      accessTokenUri: https://domain/oauth/token
       authorizationGrants: [code, token, owner]
       scopes: [read_data_points, write_data_points, delete_data_points]
 

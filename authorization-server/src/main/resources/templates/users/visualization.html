@@ -5,6 +5,12 @@
     <meta charset="utf-8"/>
   </head>
   <body>
+    <div th:if="${user}">
+      <p th:text="'Hello, ' + ${user.username} + '!'" />
+      <form th:action="@{/logout}" method="post">
+	<input type="submit" value="Logout"/>
+      </form>
+    </div>
     <h1>Secured Visualizations</h1>
     <p> The visualizations will be incorporated into the system through here</p>
     <p><a href="/" th:ref="@{/}">Back to home page</a></p>

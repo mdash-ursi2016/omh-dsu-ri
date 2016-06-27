@@ -63,13 +63,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-	    .authorizeRequests().antMatchers("/","/index","/client", "/users").permitAll()
-	    .antMatchers("/users/**").hasRole("USER")
-	    //.anyRequest().authenticated()
+	http //.requiresChannel().anyRequest().requiresSecure()
+	    //.and()
+	    .authorizeRequests()
+	      .antMatchers("/","/index","/clients", "/users").permitAll()
+	      .antMatchers("/users/**").hasRole("END_USER")
+	      .anyRequest().authenticated()
 	      .and()
 	    .formLogin().loginPage("/login").permitAll()
-	    //.formLogin().permitAll()
 	      .and()
 	    .csrf().disable();
     }

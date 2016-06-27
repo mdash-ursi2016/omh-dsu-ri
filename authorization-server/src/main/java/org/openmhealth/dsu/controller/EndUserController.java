@@ -19,6 +19,8 @@ package org.openmhealth.dsu.controller;
 
 import org.openmhealth.dsu.domain.EndUserRegistrationData;
 import org.openmhealth.dsu.service.EndUserService;
+import org.openmhealth.dsu.domain.EndUser;
+import org.openmhealth.dsu.repository.EndUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,12 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.ui.Model;
+import java.util.Optional;
+
+
 
 /**
  * A controller that manages user accounts.
@@ -51,6 +59,9 @@ public class EndUserController {
     @Autowired
     private EndUserService endUserService;
 
+    @Autowired
+    private EndUserRepository repository;
+    
     /**
     * Directs users to the signup page   
     * @return a String for the signup page
@@ -64,8 +75,11 @@ public class EndUserController {
      * Directs users to the visualizations page
      * @return a String for the visualizations page
      */
+    @PreAuthorize("#oauth2.isUser()")
     @RequestMapping(value = "/users/visualization", method = GET)
-    public String visualization() {
+    public String visualization(Authentication auth, Model model) {
+	Optional<EndUser> user = repository.findOne(auth.getName());
+	model.addAttribute("user", user.get());
 	return "users/visualization";
     }
 
@@ -80,22 +94,23 @@ public class EndUserController {
     public ResponseEntity<?> registerUser(@RequestBody EndUserRegistrationData registrationData) {
 
         if (registrationData == null) {
-            return new ResponseEntity<>(BAD_REQUEST);
+            return new ResponseEntity<>("Bad request", BAD_REQUEST);
         }
 
         Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations = validator.validate(registrationData);
 
         if (!constraintViolations.isEmpty()) {
-            return new ResponseEntity<>(asErrorMessageList(constraintViolations), BAD_REQUEST);
-        }
+            //return new ResponseEntity<>(asErrorMessageList(constraintViolations), BAD_REQUEST);
+	    return new ResponseEntity<>("Constraint Violation", BAD_REQUEST);
+	}
 
         if (endUserService.doesUserExist(registrationData.getUsername())) {
-            return new ResponseEntity<>(CONFLICT);
+            return new ResponseEntity<>("Bad request", CONFLICT);
         }
 
         endUserService.registerUser(registrationData);
 
-        return new ResponseEntity<>(CREATED);
+        return new ResponseEntity<>("Created", CREATED);
     }
 
     protected List<String> asErrorMessageList(Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations) {

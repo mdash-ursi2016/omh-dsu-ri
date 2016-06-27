@@ -6,21 +6,17 @@
     <script type="text/javascript">
       newUser = function() {
       var data = JSON.stringify({
-      "username": ""+username.value+"",
-      "password": ""+password.value+""
+      "username": username.value,
+      "password": password.value
       });
       var xhr = new XMLHttpRequest();
       xhr.withCredentials = true;
       xhr.addEventListener("readystatechange", function () {
       if (this.readyState===4) {
-        if (this.status===200) {
-        document.getElementById("res").innerHTML= "Success! User has been created \n";
-        } else {
-        document.getElementById("res").innerHTML= "Whoops! Try again. \n";
-        }
+        document.getElementById("res").innerHTML = this.responseText;
       }
       });
-      xhr.open("POST", "http://143.229.6.40:8082/users");
+      xhr.open("POST", "http://143.229.6.40:80/users");
       xhr.setRequestHeader("accept", "application/json");
       xhr.setRequestHeader("content-type", "application/json");
       xhr.setRequestHeader("cache-control", "no-cache");
