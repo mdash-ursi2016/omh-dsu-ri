@@ -21,15 +21,20 @@ import org.openmhealth.dsu.domain.EndUserRegistrationData;
 import org.openmhealth.dsu.service.EndUserService;
 import org.openmhealth.dsu.domain.EndUser;
 import org.openmhealth.dsu.repository.EndUserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.ui.Model;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.util.Optional;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,11 +42,6 @@ import java.util.stream.Collectors;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
-import java.util.Optional;
 
 
 
@@ -94,7 +94,7 @@ public class EndUserController {
     public ResponseEntity<?> registerUser(@RequestBody EndUserRegistrationData registrationData) {
 
         if (registrationData == null) {
-            return new ResponseEntity<>("Bad request", BAD_REQUEST);
+            return new ResponseEntity<>("Bad request, this is null", BAD_REQUEST);
         }
 
         Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations = validator.validate(registrationData);

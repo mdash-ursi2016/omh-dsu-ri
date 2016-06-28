@@ -30,6 +30,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.util.Iterator;
 
 
 /**
@@ -49,15 +50,26 @@ public class EndUserServiceImpl implements EndUserService {
 
         return endUserRepository.findOne(username).isPresent();
     }
-
+    
     @Override
     @Transactional
     public void registerUser(EndUserRegistrationData registrationData) {
 
+	// Iterate through the existing users and check for duplicate e-mails
+	Iterator usrItr = endUserRepository.findAll().iterator();
+	while (usrItr.hasNext()) {
+	    EndUser user = (EndUser) usrItr.next();
+	    if (registrationData.getEmailAddress().equals(user.getEmailAddress().toString())) {
+		throw new EndUserRegistrationException(registrationData);
+	    }
+	}
+
+	// Determine if username already exists
         if (doesUserExist(registrationData.getUsername())) {
             throw new EndUserRegistrationException(registrationData);
         }
 
+	// Create new user
         EndUser endUser = new EndUser();
         endUser.setUsername(registrationData.getUsername());
         endUser.setPasswordHash(passwordEncoder.encode(registrationData.getPassword()));

@@ -83,7 +83,7 @@ public class DataPointController {
      */
     // TODO confirm if HEAD handling needs anything additional
     // only allow clients with read scope to read data points
-    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
+    @PreAuthorize("#oauth2.isUser() or #oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
     // TODO look into any meaningful @PostAuthorize filtering
     @RequestMapping(value = "/dataPoints", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
@@ -168,7 +168,6 @@ public class DataPointController {
      * @param dataPoints the data points to write
      */
     // only allow clients with write scope to write data points
-    /* ---- Multi-point-POST.v2 ---- */
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
     @RequestMapping(value = "/dataPoints/multi", method = POST, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> writeDataPoints(@RequestBody @Valid DataPoint[] dataPoints, Authentication authentication) {
@@ -189,7 +188,7 @@ public class DataPointController {
 	}
 	// Save the data points that did not conflict
 	dataPointService.save(dpList);
-
+	
 	if (conflictIds.isEmpty()) {
 	    return new ResponseEntity<>(CREATED);
 	} else {
@@ -233,15 +232,6 @@ public class DataPointController {
             throw new IllegalStateException("A user identifier property can't be changed in the data point header.", e);
         }
     }
-
-    /*
-     * Test
-     */
-    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
-    @RequestMapping(value = "/test")
-    public ResponseEntity<?> testFxn(@RequestBody String str, Authentication authentication) {
-	return new ResponseEntity<>("I got your string: " + str, CREATED);
-    }
     
     /**
      * Deletes a data point.
@@ -249,8 +239,7 @@ public class DataPointController {
      * @param id the identifier of the data point to delete
      */
     // only allow clients with delete scope to delete data points
-    @PreAuthorize(
-            "#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_DELETE_SCOPE + "')")
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_DELETE_SCOPE + "')")
     @RequestMapping(value = "/dataPoints/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteDataPoint(@PathVariable String id, Authentication authentication) {
 
@@ -261,4 +250,21 @@ public class DataPointController {
 
         return new ResponseEntity<>(dataPointsDeleted == 0 ? NOT_FOUND : OK);
     }
+
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_DELETE_SCOPE + "')")
+    @RequestMapping(value = "/dataPoints/bulk_delete", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteDataPoints(@RequestParam(value = "start_id", required = true) final long startId,
+					      @RequestParam(value = "end_id", required = true) final long endId,
+					      Authentication authentication) {
+
+	String endUserId = getEndUserId(authentication);
+	Long dataPointsDeleted = new Long(0);
+	
+	for (long i = startId; i <= endId; i++) {
+	    dataPointsDeleted += dataPointService.deleteByIdAndUserId(Long.toString(i), endUserId);
+	}
+
+	return new ResponseEntity<>(dataPointsDeleted, dataPointsDeleted == 0 ? NOT_FOUND : OK);
+    }
+
 }

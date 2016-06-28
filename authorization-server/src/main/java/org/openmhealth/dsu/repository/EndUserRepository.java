@@ -30,6 +30,11 @@ import java.util.Optional;
 public interface EndUserRepository extends Repository<EndUser, String> {
 
     /**
+     * @see org.springframework.data.repository.CrudRepository#findAll
+     */
+    Iterable<EndUser> findAll();
+
+    /**
      * @see org.springframework.data.repository.CrudRepository#findOne(java.io.Serializable)
      */
     Optional<EndUser> findOne(String username);
