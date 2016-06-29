@@ -20,6 +20,7 @@ package org.openmhealth.dsu.controller;
 import org.openmhealth.dsu.domain.EndUserRegistrationData;
 import org.openmhealth.dsu.service.EndUserService;
 import org.openmhealth.dsu.domain.EndUser;
+import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.repository.EndUserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,6 @@ import java.util.stream.Collectors;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-
-
 
 /**
  * A controller that manages user accounts.
@@ -104,7 +103,8 @@ public class EndUserController {
 	    return new ResponseEntity<>("Constraint Violation", BAD_REQUEST);
 	}
 
-        if (endUserService.doesUserExist(registrationData.getUsername())) {
+        if (endUserService.doesUserExist(registrationData.getUsername()) ||
+	    endUserService.doesEmailExist(registrationData.getEmailAddress())) {
             return new ResponseEntity<>("Bad request", CONFLICT);
         }
 
@@ -116,5 +116,25 @@ public class EndUserController {
     protected List<String> asErrorMessageList(Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations) {
 
         return constraintViolations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
+    }
+
+    /**
+     * Deletes an existing user.
+     * @param authentication
+     * @return a response entity with status OK if the user was deleted, BAD_REQUEST if the request is invalid
+     */
+    @PreAuthorize("#oath2.isUser()")
+    @RequestMapping(value = "/users/del", method = POST)
+    public ResponseEntity<?> deleteUser(Authentication authentication) {
+	String user = ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
+	
+	if (registrationData == null) {
+	    return new ResponseEntity<>("Bad request", BAD_REQUEST);
+	}
+
+	if (registrationData.getUsername() == user){
+	    endUserService.delete(user);
+	    return new ResponseEntity<>("Successful", OK);
+	}
     }
 }

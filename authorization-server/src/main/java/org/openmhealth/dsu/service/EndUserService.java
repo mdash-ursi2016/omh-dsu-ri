@@ -31,7 +31,11 @@ public interface EndUserService {
 
     boolean doesUserExist(String username);
 
+    boolean doesEmailExist(String emailAddress);
+    
     void registerUser(EndUserRegistrationData registrationData);
 
+    void delete(String username);
+    
     Optional<EndUser> findUser(String username);
 }

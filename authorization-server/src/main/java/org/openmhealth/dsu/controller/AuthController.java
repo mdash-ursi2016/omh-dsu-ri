@@ -1,4 +1,4 @@
-package org.openmhealth.dsu.configuration;
+package org.openmhealth.dsu.controller;
 
 import org.openmhealth.dsu.domain.EndUser;
 import org.openmhealth.dsu.repository.EndUserRepository;
@@ -22,23 +22,22 @@ public class AuthController {
 	return "index";
     }
 
-    
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public String index() {
-	return "index";
-    }    
+    @RequestMapping(value = "/about", method = RequestMethod.GET)
+    public String about(){
+	return "about";
+    }
     
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login() {
 	return "login";
     }
-
-    @RequestMapping(value = "/clients", method = RequestMethod.GET)
+    
+    @RequestMapping(value = "/client_registration", method = RequestMethod.GET)
     public String clientSignup() {
-	return "client";
+	return "client_registration";
     }
 
-    @RequestMapping(value = "/clients", method = RequestMethod.POST)
+    @RequestMapping(value = "/client_registration", method = RequestMethod.POST)
     public ResponseEntity<?> clientRegistration() {
 	//This is where a client is created
 	return new ResponseEntity<>(CREATED);

@@ -5,8 +5,8 @@
     <meta charset="utf-8" />
   </head>
   <body>
-    <h1>Please Login</h1>
-    <p>Example user: user / password </p>
+    <h1 style="font-size:300%">Please Login</h1>
+    <p style="font-size:300%">Example user: user / password </p>
     <form method="post">
       <div th:if="${param.error}" class="alert alert-error">
 	Invalid username and password.
@@ -14,13 +14,13 @@
       <div th:if="${param.logout}" class="alert alert-success">
 	You have been logged out.
       </div>
-      <label for="username">Username</label>:
-      <input type="text" id="username" name="username" placeholder="Kvothe" required="true" autofocus="true" autocorrect="off" /> <br/>
-      <label for="password">Password</label>:
-      <input type="password" id="password" name="password" placeholder="TemerantSecrets"/> <br/>
-      <input type="submit" value="Submit"/>
+      <label style="font-size:300%">Username</label>:
+      <input type="text" style="font-size:300%" id="username" name="username" required="true" autofocus="true" autocorrect="off" /> <br/>
+      <label for="password" style="font-size:300%">Password</label>:
+      <input type="password" style="font-size:300%" id="password" name="password"/> <br/>
+      <input type="submit" style="font-size:300%" value="Submit"/>
     </form>
-    <p>If you are new to Vassar OMH, sign up <a href="/" th:href="@{/users}"> here </a></p>
-    <p><a href="/" th:href="@{/}"> Back to home page</a></p>
+    <p style="font-size:200%">If you are new to Vassar OMH, sign up <a href="/" th:href="@{/users}"> here </a></p>
+    <p style="font-size:200%"><a href="/" th:href="@{/}"> Back to home page</a></p>
   </body>
 </html>

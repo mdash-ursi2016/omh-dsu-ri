@@ -1,19 +1,55 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
     <title>Visualizations</title>
     <meta charset="UTF-8"/>
   </head>
   <body>
-    <div th:if="${user}">
+    <div align="right" th:if="${user}">
       <p th:text="'Hello, ' + ${user.username} + '!'" />
       <form th:action="@{/logout}" method="post">
 	<input type="submit" value="Logout"/>
       </form>
     </div>
+
     <h1>Vassar OMH: Live Visualization</h1>
     <p th:text=" 'This demo shows a chart of the incoming data points for ' + ${user.username} + '.'" />
-    <!--This is where the inputs for the chart specifications would be-->   
+
+    <!--<canvas id="bpm_chart" width="500" height="500"></canvas> FAILED ATTEMPTS AT CHART.JS-->
+
+    <div style="font-size=300%" id="content">BPM</div>
+
     <p><a href="/" th:ref="@{/}">Back to home page</a></p>
+
+    <script type="text/javascript">
+      var thisVar = setInterval(getData, 5000);
+      
+      function getData() {
+      var xhr = new XMLHttpRequest();
+      var res = {};
+      var url = "http://143.229.6.40:443/v1.0.M1/dataPoints?schema_namespace=omh&amp;schema_name=heart-rate&amp;schema_version=1.0";
+      
+      xhr.withCredentials = true;
+      xhr.addEventListener("readystatechange", function () {
+      if (this.readyState===4) {
+      res = JSON.parse(xhr.responseText);
+      getBPM(res);
+      }});
+      
+      xhr.open("GET", url, true);
+      xhr.setRequestHeader("accept", "application/json");
+      xhr.setRequestHeader("authorization", "Bearer 4805b0b6-8036-438a-aec7-9ed6f593e82e");
+      xhr.setRequestHeader("cache-control", "no-cache");
+      xhr.send();
+      }
+      
+      function getBPM(arr) {
+      len = arr.length;
+      if (len>0) {
+      document.getElementById("content").innerHTML = arr[len-1].body.heart_rate.value;
+      }
+      }
+    </script>
   </body>
+  <!-- <script th:src="@{/js/node_modules/chart.js}"></script> FAILED ATTEMPTS AT CHART.JS-->  
 </html>

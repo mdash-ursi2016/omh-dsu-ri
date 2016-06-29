@@ -52,20 +52,23 @@ public class EndUserServiceImpl implements EndUserService {
     }
     
     @Override
+    @Transactional(readOnly = true)
+    public boolean doesEmailExist(String emailAddress) {
+	// Iterate through the existing users and check for duplicate e-mail addresses
+	Iterator usrItr = endUserRepository.findAll().iterator();
+	boolean res = false;
+	while (usrItr.hasNext() && !res) {
+	    EndUser user = (EndUser) usrItr.next();
+	    res = emailAddress.equals(user.getEmailAddress().toString());
+	}
+	return res;
+    }
+    
+    @Override
     @Transactional
     public void registerUser(EndUserRegistrationData registrationData) {
-
-	// Iterate through the existing users and check for duplicate e-mails
-	Iterator usrItr = endUserRepository.findAll().iterator();
-	while (usrItr.hasNext()) {
-	    EndUser user = (EndUser) usrItr.next();
-	    if (registrationData.getEmailAddress().equals(user.getEmailAddress().toString())) {
-		throw new EndUserRegistrationException(registrationData);
-	    }
-	}
-
-	// Determine if username already exists
-        if (doesUserExist(registrationData.getUsername())) {
+	// Determine if username already exists or if e-mail is duplicated
+	if (doesUserExist(registrationData.getUsername()) || doesEmailExist(registrationData.getEmailAddress())) {
             throw new EndUserRegistrationException(registrationData);
         }
 
@@ -92,5 +95,11 @@ public class EndUserServiceImpl implements EndUserService {
     public Optional<EndUser> findUser(String username) {
 
         return endUserRepository.findOne(username);
+    }
+
+    @Override
+    @Transactional
+    public void delete(String username) {
+	return endUserRepository.delete(username);
     }
 }
