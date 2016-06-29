@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Visualization</title>
-    <meta charset="utf-8"/>
+    <title>Visualizations</title>
+    <meta charset="UTF-8"/>
   </head>
   <body>
     <div th:if="${user}">
@@ -11,8 +11,9 @@
 	<input type="submit" value="Logout"/>
       </form>
     </div>
-    <h1>Secured Visualizations</h1>
-    <p> The visualizations will be incorporated into the system through here</p>
+    <h1>Vassar OMH: Live Visualization</h1>
+    <p th:text=" 'This demo shows a chart of the incoming data points for ' + ${user.username} + '.'" />
+    <!--This is where the inputs for the chart specifications would be-->   
     <p><a href="/" th:ref="@{/}">Back to home page</a></p>
   </body>
 </html>

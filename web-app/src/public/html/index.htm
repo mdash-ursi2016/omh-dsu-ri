@@ -1,10 +1,23 @@
 <html>
   <body>
-    <form action="https://143.229.6.40:49160/process_post" method="POST">
+   <!-- <form action="https://143.229.6.40:49160/token" method="POST">
       Username: <input type="text" name="username">  <br>
 
       Password: <input type="password" name="password">
-      <input type="submit" value="Submit">
-    </form>
+      <input type="button" value="Submit">
+   </form>-->
+   <div>
+     Username: <input id="username" type="text" placeholder="Harry">  <br>
+
+     Password: <input id="password" type="password" placeholder="Potter">
+     <button id="submit" onclick="getToken()">Submit</button>
+   </div>
+   <script>
+     function getToken() {
+     var token = "2016MyToken"
+     var url = "http://143.229.6.40:49160/login&" + token;
+     window.location.href = url;
+     }
+   </script>
   </body>
 </html>
