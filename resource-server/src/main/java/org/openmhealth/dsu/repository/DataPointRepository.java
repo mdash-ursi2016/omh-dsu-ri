@@ -42,5 +42,7 @@ public interface DataPointRepository extends Repository<DataPoint, String>, Cust
 
     void delete(String id);
 
+    void delete(Iterable<DataPoint> dataPoints);
+    
     Long deleteByIdAndHeaderUserId(String id, String userId);
 }

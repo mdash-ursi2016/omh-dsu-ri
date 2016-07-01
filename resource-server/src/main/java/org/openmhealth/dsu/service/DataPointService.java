@@ -43,5 +43,7 @@ public interface DataPointService {
 
     void delete(String id);
 
+    void delete(Iterable<DataPoint> dataPoints);
+    
     Long deleteByIdAndUserId(String id, String userId);
 }

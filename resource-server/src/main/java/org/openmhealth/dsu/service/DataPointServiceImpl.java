@@ -101,6 +101,14 @@ public class DataPointServiceImpl implements DataPointService {
 
     @Override
     @Transactional
+    public void delete(Iterable<DataPoint> dataPoints) {
+	checkNotNull(dataPoints);
+
+	repository.delete(dataPoints);
+    }
+    
+    @Override
+    @Transactional
     public Long deleteByIdAndUserId(String id, String userId) {
 
         checkNotNull(id);

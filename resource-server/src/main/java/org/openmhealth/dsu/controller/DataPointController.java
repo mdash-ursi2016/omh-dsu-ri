@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Iterator;
 
 import static org.openmhealth.dsu.configuration.OAuth2Properties.*;
 import static org.springframework.http.HttpStatus.*;
@@ -61,10 +62,11 @@ public class DataPointController {
     public static final String SCHEMA_NAMESPACE_PARAMETER = "schema_namespace";
     public static final String SCHEMA_NAME_PARAMETER = "schema_name";
     public static final String SCHEMA_VERSION_PARAMETER = "schema_version";
-
+    public static final String START_ID_PARAMETER = "start_id";
+    public static final String END_ID_PARAMETER = "end_id";
     public static final String RESULT_OFFSET_PARAMETER = "skip";
     public static final String RESULT_LIMIT_PARAMETER = "limit";
-    public static final String DEFAULT_RESULT_LIMIT = "100";
+    public static final String DEFAULT_RESULT_LIMIT = "200";
     
     @Autowired
     private DataPointService dataPointService;
@@ -83,7 +85,7 @@ public class DataPointController {
      */
     // TODO confirm if HEAD handling needs anything additional
     // only allow clients with read scope to read data points
-    @PreAuthorize("#oauth2.isUser() or #oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
     // TODO look into any meaningful @PostAuthorize filtering
     @RequestMapping(value = "/dataPoints", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
@@ -95,8 +97,8 @@ public class DataPointController {
             @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
             // TODO replace with Optional<> in Spring MVC 4.1
             @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
-            final OffsetDateTime createdOnOrAfter,
-            @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdBefore,
+            OffsetDateTime createdOnOrAfter,
+            @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) OffsetDateTime createdBefore,
             @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
             @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit,
             Authentication authentication) {
@@ -106,18 +108,7 @@ public class DataPointController {
         // determine the user associated with the access token to restrict the search accordingly
         String endUserId = getEndUserId(authentication);
 
-        DataPointSearchCriteria searchCriteria =
-                new DataPointSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion);
-
-        if (createdOnOrAfter != null && createdBefore != null) {
-            searchCriteria.setCreationTimestampRange(Range.closedOpen(createdOnOrAfter, createdBefore));
-        }
-        else if (createdOnOrAfter != null) {
-            searchCriteria.setCreationTimestampRange(Range.atLeast(createdOnOrAfter));
-        }
-        else if (createdBefore != null) {
-            searchCriteria.setCreationTimestampRange(Range.lessThan(createdBefore));
-        }
+        DataPointSearchCriteria searchCriteria = createSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion, createdOnOrAfter, createdBefore);
 
         Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);
 
@@ -161,6 +152,7 @@ public class DataPointController {
         // FIXME test @PostAuthorize
         return new ResponseEntity<>(dataPoint.get(), OK);
     }
+
 
     /**
      * Write multiple data points.
@@ -251,20 +243,52 @@ public class DataPointController {
         return new ResponseEntity<>(dataPointsDeleted == 0 ? NOT_FOUND : OK);
     }
 
+    /**
+     * Deletes multiple data points within a range of IDs
+     *
+     * @param startId, the id to use as the start point of deletion, inclusive
+     * @param endId, the id to use as the end point of the deletion, inclusive
+     */
+    // only allow clients with delete scope to delete data points
+    
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_DELETE_SCOPE + "')")
     @RequestMapping(value = "/dataPoints/bulk_delete", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteDataPoints(@RequestParam(value = "start_id", required = true) final long startId,
-					      @RequestParam(value = "end_id", required = true) final long endId,
+    public ResponseEntity<?> deleteDataPoints(@RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
+					      @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
+					      @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
+					      @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER) OffsetDateTime createdOnOrAfter,
+					      @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) OffsetDateTime createdBefore,
+					      @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
+					      @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit,
 					      Authentication authentication) {
-
 	String endUserId = getEndUserId(authentication);
-	Long dataPointsDeleted = new Long(0);
 	
-	for (long i = startId; i <= endId; i++) {
-	    dataPointsDeleted += dataPointService.deleteByIdAndUserId(Long.toString(i), endUserId);
+	DataPointSearchCriteria searchCriteria = createSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion, createdOnOrAfter, createdBefore);
+
+	Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);	
+
+	try {
+	    dataPointService.delete(dataPoints);
+	} catch (NullPointerException e) {
+	    return new ResponseEntity<>(BAD_REQUEST);
 	}
 
-	return new ResponseEntity<>(dataPointsDeleted, dataPointsDeleted == 0 ? NOT_FOUND : OK);
+	return new ResponseEntity<>(OK);
+    }
+    
+    public DataPointSearchCriteria createSearchCriteria(String id, String namespace, String name, String version, OffsetDateTime createdOnOrAfter, OffsetDateTime createdBefore) {
+	DataPointSearchCriteria res = new DataPointSearchCriteria(id, namespace, name, version);
+
+	if (createdOnOrAfter != null && createdBefore != null) {
+	    res.setCreationTimestampRange(Range.closedOpen(createdOnOrAfter.minusMinutes(1), createdBefore.minusMinutes(1)));
+	}
+	else if (createdOnOrAfter != null) {
+	    res.setCreationTimestampRange(Range.atLeast(createdOnOrAfter.minusMinutes(1)));
+	}
+	else if (createdBefore != null) {
+	    res.setCreationTimestampRange(Range.lessThan(createdBefore.minusMinutes(1)));
+	}
+	return res;
     }
 
 }
