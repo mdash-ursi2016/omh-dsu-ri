@@ -30,8 +30,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -76,7 +77,8 @@ public class EndUserController {
      */
     @PreAuthorize("#oauth2.isUser()")
     @RequestMapping(value = "/users/visualization", method = GET)
-    public String visualization(Authentication auth, Model model) {
+    public String visualization(ModelMap model) {
+	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	Optional<EndUser> user = repository.findOne(auth.getName());
 	model.addAttribute("user", user.get());
 	return "users/visualization";
@@ -127,14 +129,7 @@ public class EndUserController {
     @RequestMapping(value = "/users/del", method = POST)
     public ResponseEntity<?> deleteUser(Authentication authentication) {
 	String user = ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
-	
-	if (registrationData == null) {
-	    return new ResponseEntity<>("Bad request", BAD_REQUEST);
-	}
-
-	if (registrationData.getUsername() == user){
-	    endUserService.delete(user);
-	    return new ResponseEntity<>("Successful", OK);
-	}
+	endUserService.delete(user);
+	return new ResponseEntity<>("Success",OK);
     }
 }

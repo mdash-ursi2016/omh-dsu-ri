@@ -5,23 +5,25 @@ import org.openmhealth.dsu.repository.EndUserRepository;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.Optional;
 
 @Controller
 public class AuthController {
+
     EndUserRepository repository;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String root() {
+    public String rootHome() {
 	return "index";
     }
-
+    
     @RequestMapping(value = "/about", method = RequestMethod.GET)
     public String about(){
 	return "about";

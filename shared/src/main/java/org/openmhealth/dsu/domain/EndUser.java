@@ -55,8 +55,8 @@ public class EndUser {
         this.passwordHash = passwordHash;
     }
 
-    public Optional<InternetAddress> getEmailAddress() {
-        return Optional.ofNullable(emailAddress);
+    public InternetAddress getEmailAddress() {
+        return emailAddress;
     }
 
     public void setEmailAddress(InternetAddress emailAddress) {

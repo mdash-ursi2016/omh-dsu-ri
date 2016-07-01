@@ -57,10 +57,19 @@ public class EndUserServiceImpl implements EndUserService {
 	// Iterate through the existing users and check for duplicate e-mail addresses
 	Iterator usrItr = endUserRepository.findAll().iterator();
 	boolean res = false;
+	InternetAddress address = null;
+	
+	try {
+	    address = new InternetAddress(emailAddress);
+	} catch (AddressException e) {
+	    res = true;
+	}
+	
 	while (usrItr.hasNext() && !res) {
 	    EndUser user = (EndUser) usrItr.next();
-	    res = emailAddress.equals(user.getEmailAddress().toString());
+	    res = address.equals(user.getEmailAddress());
 	}
+	
 	return res;
     }
     
@@ -100,6 +109,6 @@ public class EndUserServiceImpl implements EndUserService {
     @Override
     @Transactional
     public void delete(String username) {
-	return endUserRepository.delete(username);
+	endUserRepository.delete(username);
     }
 }
