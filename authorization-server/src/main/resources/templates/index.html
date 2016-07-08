@@ -3,57 +3,7 @@
   <head>
     <title>Home Page</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <style>
-      ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: #333;
-      }
-
-      li { float: left; }
-      
-      li a, .dropbtn {
-      display: inline-block;
-      color: white;
-      text-align: center;
-      padding: 14px 16px;
-      text-decoration: none;
-      }
-      
-      li a:hover, .dropdown:hover .dropbtn {
-      background-color: #111;
-      color: white;
-      }
-      
-      .active {
-      background-color: #4BC0C0;
-      color: white;
-      }
-
-      li.dropdown {display: inline-block;}
-      
-      .dropdown-content {
-      display: none;
-      position: absolute;
-      background-color: #333;
-      min-width: 160px;
-      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-      }
-      
-      .dropdown-content a {
-      color: white;
-      padding: 14px 16px;
-      text-decoration: none;
-      display: block;
-      text-align: left;
-      }
-      
-      .dropdown-content a:hover { background-color: #111; }
-      
-      .dropdown:hover .dropdown-content { display: block; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/navbar.css}"/>
   </head>
   <body>
     <!--Nav bar: Home About Git Client_Registration User_Login-->
@@ -61,11 +11,12 @@
       <li><a class="active" href="/" th:href="@{/}">Home</a></li>
       <li><a href="/about" th:href="@{/about}">About Us</a></li>
       <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
-      <li><a href="/client_registration" th:href="@{/client_registration}">Client Registration</a></li>
+      <li><a href="/clients" th:href="@{/clients}">Client Registration</a></li>
       <li class="dropdown">
 	<a class="dropbtn" href="/login" th:href="@{/login}">User </a>
 	<div class="dropdown-content">
-	  <a href="/users/visualization" th:href="@{/users/visualization}">Dashboard</a>
+	  <a href="http://143.229.6.40:443/dash" th:href="@{http://143.229.6.40:443/dash}">Dashboard</a>
+	  <a href="/users/visualization" th:href="@{/users/visualization}"> Visualization </a>
 	</div>
       </li>
     </ul>

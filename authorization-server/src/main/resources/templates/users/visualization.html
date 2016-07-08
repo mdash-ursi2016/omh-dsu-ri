@@ -3,15 +3,28 @@
   <head>
     <title>Visualizations</title>
     <meta charset="UTF-8"/>
+    <link rel="stylesheet" th:href="@{/css/navbar.css}"/>
   </head>
   <body>
-    <div align="right" th:if="${user}">
-      <p th:text="'Hello, ' + ${user.username} + '!'" />
-      <form th:action="@{/logout}" method="post">
-	<input type="submit" value="Logout"/>
-      </form>
-    </div>
-
+    <ul>
+      <li><a href="/" th:href="@{/}">Home</a></li>
+      <li><a href="/about" th:href="@{/about}">About Us</a></li>
+      <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
+      <li><a href="/client_registration" th:href="@{/client_registration}">Client Registration</a></li>
+      <li class="dropdown">
+	<a class="dropbtn" href="/login" th:href="@{/login}">User </a>
+	<div class="dropdown-content">
+	  <a href="http://143.229.6.40:443/dash" th:href="@{http://143.229.6.40:443/dash}">Dashboard</a>
+	  <a class="active" href="/users/visualization" th:href="@{/users/visualization}"> Visualization </a>
+	</div>
+      </li>
+      <li> <div align="right" th:if="${user.username}">
+	  <p th:text="'Hello, ' + ${user.username} + '!'"/>
+	  <form th:action="@{/logout}" method="post">
+	    <input type="submit" value="Logout"/></form></div>
+      </li>
+    </ul>
+  
     <h1>Vassar OMH: Live Visualization</h1>
     <p th:text=" 'This demo shows a chart of the incoming data points for ' + ${user.username} + '.'" />
 
@@ -25,41 +38,7 @@
     
     <p><a href="/" th:ref="@{/}">Back to home page</a></p>
 
-    <script type="text/javascript">
-      var thisVar = setInterval(getData, 5000);
-      
-      function getData() {
-      var xhr = new XMLHttpRequest();
-      var res = {};
-      var date = new Date().getTime();
-      date = new Date(date-60000).toISOString();
-      
-      var url = "http://143.229.6.40:443/v1.0.M1/dataPoints?schema_namespace=omh&amp;schema_name=heart-rate&amp;schema_version=1.0&amp;created_on_or_after=" + date;
-      document.getElementById("test1").innerHTML = url;
-
-      xhr.withCredentials = false;
-      xhr.addEventListener("readystatechange", function () {
-      if (this.readyState===4) {
-      res = JSON.parse(xhr.responseText);
-      document.getElementById("test2").innerHTML = res;
-      //getBPM(res);
-      }});
-      
-      xhr.open("GET", url, true);
-      xhr.setRequestHeader("accept", "application/json");
-      xhr.setRequestHeader("authorization", "Bearer 4805b0b6-8036-438a-aec7-9ed6f593e82e");
-      xhr.setRequestHeader("cache-control", "no-cache");
-      xhr.send();
-      }
-
-      /*
-      function getBPM(arr) {
-      len = arr.length;
-      if (len>0) {
-      document.getElementById("content").innerHTML = arr[0].body.heart_rate.value;
-      }}
-      */
-    </script>
+    <script type="text/javascript" th:src="@{/js/dataFetch.js}"></script>
   </body>
   <!-- <script th:src="@{/js/node_modules/chart.js}"></script> FAILED ATTEMPTS AT CHART.JS-->  
 </html>

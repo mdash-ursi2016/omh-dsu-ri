@@ -3,19 +3,23 @@
   <head>
     <title>About</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <style>
-
-    </style>
+    <link rel="stylesheet" th:href="@{/css/navbar.css}"/>
   </head>
   <body>
-    <h1>Open mHealth Vassar URSI Project</h1>
     <ul>
       <li><a href="/" th:href="@{/}">Home</a></li>
-      <li><a href="/about" th:href="@{/about}">About Us</a></li>
+      <li><a class="active" href="/about" th:href="@{/about}">About Us</a></li>
       <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
-      <li><a href="/client_registration" th:href="@{/client_registration}">Client Registration</a></li>
-      <li><a href="login" th:href="@{/login}">User</a></li>
+      <li><a href="/clients" th:href="@{/clients}">Client Registration</a></li>
+      <li class="dropdown">
+	<a class="dropbtn" href="/login" th:href="@{/login}">User </a>
+	<div class="dropdown-content">
+	  <a href="http://143.229.6.40:443/dash" th:href="@{http://143.229.6.40:443/dash}">Dashboard</a>
+	  <a href="/users/visualization" th:href="@{/users/visualization}"> Visualization </a>
+	</div>
+      </li>
     </ul>
+    <h1>Open mHealth Vassar URSI Project</h1>
     <p> Welcome to the Open mHealth Vassar URSI project!</p>
     <p> Developed by Alex, Macall, and Nate. But mostly Alex and Macall. And not Nate. </p>
   </body>

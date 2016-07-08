@@ -3,6 +3,7 @@
   <head>
     <title>User Registration</title>
     <meta charset="utf-8" />
+    <link rel="stylesheet" th:href="@{/css/navbar.css}"/>
     <script type="text/javascript">
       newUser = function() {
       var data = JSON.stringify({
@@ -28,6 +29,19 @@
     </script>
   </head>
   <body>
+    <ul>
+      <li><a href="/" th:href="@{/}">Home</a></li>
+      <li><a href="/about" th:href="@{/about}">About Us</a></li>
+      <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
+      <li><a href="/clients" th:href="@{/clients}">Client Registration</a></li>
+      <li class="dropdown">
+	<a class="active dropbtn" href="/login" th:href="@{/login}">User </a>
+	<div class="dropdown-content">
+	  <a href="http://143.229.6.40:443/dash" th:href="@{http://143.229.6.40:443/dash}">Dashboard</a>
+	  <a href="/users/visualization" th:href="@{/users/visualization}"> Visualization </a>
+	</div>
+      </li>
+    </ul>
     <h1>Sign Up with MDash</h1>
     <p>Example user: user / password </p>
     
@@ -41,6 +55,5 @@
       <input type="email" id="emailAddress" name="emailAddress" required="true"/><br/>
       <button type="button" onclick="newUser()"> Submit </button>
     </form>
-    <p><a href="/" th:href="@{/}"> Back to home page</a></p>
   </body>
 </html>
