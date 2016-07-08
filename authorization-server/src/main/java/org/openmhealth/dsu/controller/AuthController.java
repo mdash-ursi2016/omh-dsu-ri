@@ -34,12 +34,12 @@ public class AuthController {
 	return "login";
     }
     
-    @RequestMapping(value = "/client_registration", method = RequestMethod.GET)
+    @RequestMapping(value = "/clients", method = RequestMethod.GET)
     public String clientSignup() {
 	return "client_registration";
     }
 
-    @RequestMapping(value = "/client_registration", method = RequestMethod.POST)
+    @RequestMapping(value = "/clients", method = RequestMethod.POST)
     public ResponseEntity<?> clientRegistration() {
 	//This is where a client is created
 	return new ResponseEntity<>(CREATED);

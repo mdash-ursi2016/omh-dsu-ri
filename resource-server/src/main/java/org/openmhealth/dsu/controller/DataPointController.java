@@ -24,6 +24,7 @@ import org.openmhealth.schema.domain.omh.DataPoint;
 import org.openmhealth.schema.domain.omh.DataPointHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -85,6 +86,11 @@ public class DataPointController {
      */
     // TODO confirm if HEAD handling needs anything additional
     // only allow clients with read scope to read data points
+    /*  @CrossOrigin(origins = "http://143.229.6.40/",
+		 methods = {HEAD, GET},
+		 allowedHeaders = "Accept, Cache-Control, Authorization",
+		 allowCredentials = "true",
+		 exposedHeaders = "Access-Control-Allow-Origin, Access-Control-Allow-Methods Access-Control-Allow-Headers, Access-Control-Allow-Credentials")*/
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
     // TODO look into any meaningful @PostAuthorize filtering
     @RequestMapping(value = "/dataPoints", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
@@ -112,8 +118,8 @@ public class DataPointController {
 
         Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);
 
-        HttpHeaders headers = new HttpHeaders();
-
+	HttpHeaders headers = new HttpHeaders();
+	
         // FIXME add pagination headers
         // headers.set("Next");
         // headers.set("Previous");
@@ -122,10 +128,42 @@ public class DataPointController {
     }
 
     public String getEndUserId(Authentication authentication) {
-
         return ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
     }
 
+    /*
+    public HttpHeaders createHeaders() {
+	// Initialize headers and lists
+	HttpHeaders headers = new HttpHeaders();
+	List exposedHeaders = new LinkedList();
+	List allowedHeaders = new LinkedList();
+	List allowedMethods = new LinkedList();
+
+	// Add Strings to exposedHeaders list
+	exposedHeaders.add("Access-Control-Allow-Origin");
+	exposedHeaders.add("Access-Control-Allow-Methods");
+	exposedHeaders.add("Access-Control-Allow-Headers");
+	exposedHeaders.add("Access-Control-Allow-Credentials");
+	
+
+	// Add Strings to allowedHeaders list
+	allowedHeaders.add("Accept");
+	allowedHeaders.add("Cache-Control");
+	allowedHeaders.add("Authorization");
+	
+	// Add HttpMethods to allowedMethods list
+	allowedMethods.add(GET);
+	allowedMethods.add(HEAD);
+
+	headers.setAccessControlAllowHeaders(allowedHeaders);
+	headers.setAccessControlAllowMethods(allowedMethods);
+	headers.setAccessControlAllowOrigin("http://143.229.6.40/");
+	headers.setAccessControlAllowCredentials(true);
+	//headers.setAccessControlExposeHeaders(exposedHeaders);
+	return headers;
+    }
+    */
+    
     /**
      * Reads a data point.
      *

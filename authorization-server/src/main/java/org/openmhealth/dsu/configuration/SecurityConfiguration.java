@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -56,22 +57,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    /* @Override
+    @Override
     public void configure(WebSecurity web) throws Exception {
-	web.ignoring().antMatchers("/css/**"); // Ignore any request that starts with "/css/", will be clarified later 
-	}*/
+        web
+	    .ignoring()
+	    .antMatchers("/css/**", "/js/**", "/favicon.ico");
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 	http //.requiresChannel().anyRequest().requiresSecure()
 	    //.and()
 	    .authorizeRequests()
-	      .antMatchers("/","/index","/clients", "/users").permitAll()
+	      .antMatchers("/","/about","/clients", "/users").permitAll()
 	      .antMatchers("/users/**").hasRole("END_USER")
 	      .anyRequest().authenticated()
 	      .and()
 	    .formLogin().loginPage("/login").permitAll()
-	      .and()
+       	      .and()
+	    .headers()
+	       .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'http://143.229.6.40:443'"))
+	    .and()
 	    .csrf().disable();
     }
 }

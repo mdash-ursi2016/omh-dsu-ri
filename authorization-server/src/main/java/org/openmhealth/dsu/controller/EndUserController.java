@@ -68,8 +68,9 @@ public class EndUserController {
     */
     @RequestMapping(value = "/users", method = GET)
     public String signup() {
-        return "users";
+        return "user_registration";
       }
+
 
     /**
      * Directs users to the visualizations page
@@ -77,13 +78,13 @@ public class EndUserController {
      */
     @PreAuthorize("#oauth2.isUser()")
     @RequestMapping(value = "/users/visualization", method = GET)
-    public String visualization(ModelMap model) {
-	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public String visualization(Authentication auth, ModelMap model) {
 	Optional<EndUser> user = repository.findOne(auth.getName());
 	model.addAttribute("user", user.get());
 	return "users/visualization";
     }
 
+    
     /**
      * Registers a new user.
      *
