@@ -13,16 +13,6 @@ buildscript {
     }
 }
 
-allprojects {
-    group = 'org.openmhealth'
-    version = '0.1.0'
-
-    repositories {
-        mavenLocal()
-        jcenter()
-    }
-}
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'spring-boot' // used for auto-configuration
@@ -35,9 +25,78 @@ subprojects {
 
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
+}
+
+configure(project(":shared")){
+    group = 'org.openmhealth'
+    version = '1.1.0'
+
+    repositories {
+    		 mavenLocal()
+	         jcenter()
+		 }   
+    // disable trying to make this project's JAR file executable
+    bootRepackage {
+        enabled = false
+    }
 
     dependencies {
-        compile 'org.hibernate:hibernate-validator'
+            	compile 'org.hibernate:hibernate-validator'
+	        compile "com.fasterxml.jackson.core:jackson-core"
+		compile "com.fasterxml.jackson.core:jackson-databind"
+		compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+		compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+		compile "com.sun.mail:mailapi:${mailApiVersion}" // TODO confirm if both are necessary
+		compile "javax.mail:javax.mail-api:${mailApiVersion}" // required to support InternetAddress fields
+		compile "org.openmhealth.schema:omh-schema-sdk:${omhSchemaSdkVersion}"
+		compile 'org.slf4j:slf4j-api'
+		compile 'org.springframework:spring-beans'
+		compile "org.springframework.boot:spring-boot-autoconfigure"
+		compile 'org.springframework:spring-context'
+		compile "org.springframework.security.oauth:spring-security-oauth2"
+		compile 'javax.validation:validation-api'
+	        testCompile 'org.hamcrest:hamcrest-library'
+	        testCompile 'junit:junit'
+	        testCompile 'org.mockito:mockito-core'
+		testCompile 'org.springframework:spring-test'
+	
+	        runtime 'org.slf4j:jcl-over-slf4j'
+       		runtime 'org.slf4j:log4j-over-slf4j'
+	        runtime 'ch.qos.logback:logback-classic'
+		runtime "org.yaml:snakeyaml"
+	    }
+
+
+}
+
+configure([
+        project(":authorization-server"),
+        project(":resource-server")]) {
+
+	group = 'org.openmhealth'
+	version = '1.1.0'
+
+        repositories {
+        	     mavenLocal()
+	             jcenter()
+		     }
+
+	bootRepackage {
+        	      mainClass = "org.openmhealth.dsu.configuration.Application"
+ 		      }		      
+
+        dependencies {
+        compile project(':shared')
+        compile 'org.apache.httpcomponents:httpclient'
+        compile "org.springframework.boot:spring-boot-starter-jetty"
+	compile "org.springframework.boot:spring-boot-starter-thymeleaf"
+	compile("org.springframework.boot:spring-boot-starter-web") {
+            exclude module: "spring-boot-starter-tomcat"
+        }
+        compile 'org.springframework:spring-web'
+        compile 'org.springframework:spring-webmvc'
+
+	compile 'org.hibernate:hibernate-validator'
         compile "com.fasterxml.jackson.core:jackson-core"
         compile "com.fasterxml.jackson.core:jackson-databind"
         compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
@@ -51,46 +110,15 @@ subprojects {
         compile 'org.springframework:spring-context'
         compile "org.springframework.security.oauth:spring-security-oauth2"
         compile 'javax.validation:validation-api'
-
-        testCompile 'org.hamcrest:hamcrest-library'
-        testCompile 'junit:junit'
-        testCompile 'org.mockito:mockito-core'
-        testCompile 'org.springframework:spring-test'
-
+	testCompile 'org.hamcrest:hamcrest-library'
+	testCompile 'junit:junit'
+	testCompile 'org.mockito:mockito-core'
+	testCompile 'org.springframework:spring-test'
         runtime 'org.slf4j:jcl-over-slf4j'
         runtime 'org.slf4j:log4j-over-slf4j'
         runtime 'ch.qos.logback:logback-classic'
         runtime "org.yaml:snakeyaml"
-    }
-}
 
-configure(project(":shared")) {
-
-    // disable trying to make this project's JAR file executable
-    bootRepackage {
-        enabled = false
-    }
-}
-
-configure([
-        project(":authorization-server"),
-        project(":resource-server")]) {
-
-    bootRepackage {
-        mainClass = "org.openmhealth.dsu.configuration.Application"
-    }
-
-    dependencies {
-        compile project(':shared')
-        compile 'org.apache.httpcomponents:httpclient'
-        compile "org.springframework.boot:spring-boot-starter-jetty"
-	compile "org.springframework.boot:spring-boot-starter-thymeleaf"
-	compile("org.springframework.boot:spring-boot-starter-web") {
-            exclude module: "spring-boot-starter-tomcat"
-        }
-        compile 'org.springframework:spring-web'
-        compile 'org.springframework:spring-webmvc'
-	
         // you can comment out any dependencies you know you don't need after this point
         compile 'org.mongodb:mongo-java-driver'
         // compile 'mysql:mysql-connector-java'
@@ -108,8 +136,47 @@ configure([
     build.dependsOn copyArchiveJarToDockerContext
 }
 
+configure(project(":dashboard")) {
+    jar {
+    baseName = 'dashboard'
+    version = '0.1.0'
+    }
+
+    repositories {
+    mavenCentral()
+    }
+
+    dependencies {
+    // tag::jetty[]
+    compile("org.springframework.boot:spring-boot-starter-web") {
+    exclude module: "spring-boot-starter-tomcat"
+    }
+    compile("org.springframework.boot:spring-boot-starter-jetty")
+    // end::jetty[]
+
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+
+    // tag::actuator[]
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    // end::actuator[]
+    testCompile("junit:junit")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+
+    }
+
+    task copyArchiveJarToDockerContext(dependsOn: assemble, type: Copy) {
+      from 'build/libs'
+      into 'docker'
+      include "${jar.archiveName}"
+      rename { String fileName ->
+      	     fileName.replace("${jar.archiveName}", "${jar.baseName}.jar")
+	     }
+    }
+    build.dependsOn copyArchiveJarToDockerContext
+}
+
 // FIXME add integration test support
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.11'
+    gradleVersion = '2.3'
 }

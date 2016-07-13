@@ -23,3 +23,8 @@ resourceserver:
     - postgres:omh-postgres
   ports:
     - "443:8083"
+
+dashboard:
+  build: dashboard/docker
+  ports:
+    - "8080:8080"

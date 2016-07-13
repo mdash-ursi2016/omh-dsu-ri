@@ -63,6 +63,15 @@ public class EndUserController {
     private EndUserRepository repository;
     
     /**
+     * Directs users to a login page
+     * @return a String for the login page
+     */
+    @RequestMapping(value = "/login", method = GET)
+    public String login() {
+	return "login";
+    }
+
+    /**
     * Directs users to the signup page   
     * @return a String for the signup page
     */
@@ -75,7 +84,7 @@ public class EndUserController {
     /**
      * Directs users to the visualizations page
      * @return a String for the visualizations page
-     */
+     
     @PreAuthorize("#oauth2.isUser()")
     @RequestMapping(value = "/users/visualization", method = GET)
     public String visualization(Authentication auth, ModelMap model) {
@@ -83,7 +92,7 @@ public class EndUserController {
 	model.addAttribute("user", user.get());
 	return "users/visualization";
     }
-
+    */
     
     /**
      * Registers a new user.

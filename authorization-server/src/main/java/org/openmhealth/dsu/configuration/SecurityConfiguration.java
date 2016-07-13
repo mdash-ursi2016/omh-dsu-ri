@@ -69,15 +69,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	http //.requiresChannel().anyRequest().requiresSecure()
 	    //.and()
 	    .authorizeRequests()
-	      .antMatchers("/","/about","/clients", "/users").permitAll()
-	      .antMatchers("/users/**").hasRole("END_USER")
+	      .antMatchers("/clients", "/users").permitAll()
 	      .anyRequest().authenticated()
 	      .and()
-	    .formLogin().loginPage("/login").permitAll()
+	    .formLogin()
+	      .loginPage("/login").permitAll()
+	    //.failureUrl("/login?error")
        	      .and()
-	    .headers()
-	       .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'http://143.229.6.40:443'"))
-	    .and()
 	    .csrf().disable();
     }
 }
