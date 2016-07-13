@@ -3,45 +3,11 @@
   <head>
     <title>User Registration</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" th:href="@{/css/navbar.css}"/>
-    <script type="text/javascript">
-      newUser = function() {
-      var data = JSON.stringify({
-      "username": username.value,
-      "password": password.value,
-      "email_address": emailAddress.value
-      });
-      var xhr = new XMLHttpRequest();
-      xhr.withCredentials = true;
-      xhr.addEventListener("readystatechange", function () {
-      if (this.readyState===4) {
-        document.getElementById("res").innerHTML = this.statusText;
-      }
-      });
-      xhr.open("POST", "http://143.229.6.40:80/users");
-      xhr.setRequestHeader("accept", "application/json");
-      xhr.setRequestHeader("content-type", "application/json");
-      xhr.setRequestHeader("cache-control", "no-cache");
-      xhr.send(data);
-
-      document.getElementById("form").reset();
-      }
-    </script>
+    <!--<meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>-->
+    <script type="text/javascript" th:src="@{/js/registerUser.js}"></script>
   </head>
   <body>
-    <ul>
-      <li><a href="/" th:href="@{/}">Home</a></li>
-      <li><a href="/about" th:href="@{/about}">About Us</a></li>
-      <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
-      <li><a href="/clients" th:href="@{/clients}">Client Registration</a></li>
-      <li class="dropdown">
-	<a class="active dropbtn" href="/login" th:href="@{/login}">User </a>
-	<div class="dropdown-content">
-	  <a href="http://143.229.6.40:443/dash" th:href="@{http://143.229.6.40:443/dash}">Dashboard</a>
-	  <a href="/users/visualization" th:href="@{/users/visualization}"> Visualization </a>
-	</div>
-      </li>
-    </ul>
     <h1>Sign Up with MDash</h1>
     <p>Example user: user / password </p>
     

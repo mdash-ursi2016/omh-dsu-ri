@@ -3,23 +3,8 @@
   <head>
     <title>Login</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" th:href="@{/css/navbar.css}"/>
   </head>
   <body>
-    <ul>
-      <li><a href="/" th:href="@{/}">Home</a></li>
-      <li><a href="/about" th:href="@{/about}">About Us</a></li>
-      <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
-      <li><a href="/clients" th:href="@{/clients}">Client Registration</a></li>
-      <li class="dropdown">
-	<a class="active dropbtn" href="/login" th:href="@{/login}">User </a>
-	<div class="dropdown-content">
-	  <a href="http://143.229.6.40:443/dash" th:href="@{http://143.229.6.40:443/dash}">Dashboard</a>
-	  <a href="/users/visualization" th:href="@{/users/visualization}"> Visualization </a>
-	</div>
-      </li>
-    </ul>
-
     <h1>Please Login</h1>
     <p>Example user: user / password </p>
 
@@ -34,6 +19,7 @@
       <input type="text" id="username" name="username" required="true" autofocus="true" autocorrect="off" /> <br/>
       <label for="password">Password</label>:
       <input type="password" id="password" name="password"/> <br/>
+      <!--<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>-->
       <input type="submit" value="Submit"/>
     </form>
     <p>If you are new to Vassar OMH, sign up <a href="/" th:href="@{/users}"> here </a></p>
