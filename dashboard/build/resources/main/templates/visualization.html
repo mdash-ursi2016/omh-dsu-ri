@@ -1,0 +1,46 @@
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Visualizations</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" th:href="@{/css/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+  </head>
+  <body>
+    <ul>
+      <li><a href="/" th:href="@{/}">Home</a></li>
+      <li><a href="/about" th:href="@{/about}">About Us</a></li>
+      <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
+      <li><a href="http://143.229.6.40:80/clients">Client Registration</a></li>
+      <li class="dropdown">
+	<a class="dropbtn" href="http://143.229.6.40:80/users">User Registration </a>
+	<div class="dropdown-content">
+	  <a class ="active" href="/visualization" th:href="@{/visualization}"> Visualization </a>
+	</div>
+      </li>
+      <li> 
+	<div align="right">
+	  <form th:action="@{http://143.229.6.40:80/logout}" method="post">
+	    <input type="submit" value="Logout"/>
+	  </form>
+	</div>
+      </li>
+    </ul>
+    <div id="page-text">
+      <h1>Vassar OMH: Live Visualization</h1>
+      <p>Hello! Here you can visualize your data!</p>
+      
+      <!--<canvas id="bpm_chart" width="500" height="500"></canvas> FAILED ATTEMPTS AT CHART.JS-->
+      
+      <div style="font-size=300%" id="content">-- bpm</div>
+      <div id="test1"></div>
+      <div id="test2"></div>
+      <div id="test3"></div>
+      
+      
+      <p><a href="/" th:ref="@{/}">Back to home page</a></p>
+    </div>
+    <script type="text/javascript" th:src="@{/js/dataFetch.js}"></script>
+  </body>
+  <!-- <script th:src="@{/js/node_modules/chart.js}"></script> FAILED ATTEMPTS AT CHART.JS-->  
+</html>
