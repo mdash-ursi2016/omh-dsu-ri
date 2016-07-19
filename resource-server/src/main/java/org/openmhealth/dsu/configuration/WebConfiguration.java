@@ -15,8 +15,8 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
         @Override
 	public void addCorsMappings(CorsRegistry registry) {
-	    registry.addMapping("/v1.0.M1/dataPoints")
-		.allowedOrigins("http://143.229.6.40")
+	    registry.addMapping("/v1.0.M1/heartRate")
+		.allowedOrigins("http://143.229.6.40:8080")
 		.allowedMethods("GET")
 		.allowedHeaders("Accept", "Cache-Control", "Authorization")
 		.allowCredentials(true).maxAge(3600)

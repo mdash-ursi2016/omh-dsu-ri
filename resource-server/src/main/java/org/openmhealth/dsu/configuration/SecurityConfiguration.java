@@ -39,13 +39,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication();
     }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-	web
-	    .ignoring()
-	    .antMatchers("/css/**", "/js/**", "/favicon.ico");
-    }
     
     @Bean(name = "authenticationManager")
     @Override

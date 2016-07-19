@@ -46,15 +46,15 @@ public class OAuth2ResourceServerConfiguration extends ResourceServerConfigurerA
 	    //.and()
             .authorizeRequests()
 	    //   .antMatchers("/dash").permitAll()
-	    .antMatchers(HttpMethod.OPTIONS, "/v1.0.M1/dataPoints").permitAll()
-	    .anyRequest().authenticated()
+	       .antMatchers(HttpMethod.OPTIONS, "/v1.0.M1/heartRate").permitAll()
+	       .anyRequest().authenticated()
 	    .and()
-	       .headers().addHeaderWriter((request, response) -> {
-		       if (request.getMethod().equals("OPTIONS")) {
-			   response.addHeader("Access-Control-Allow-Origin", "http://143.229.6.40");
-			   response.setHeader("Access-Control-Allow-Methods", "GET");
-			   response.setHeader("Access-Control-Allow-Headers", "accept, authorization, cache-control");
-			   response.setHeader("Access-Control-Allow-Credentials", "true");
-		       }});
+	    .headers().addHeaderWriter((request, response) -> {
+		    if (request.getMethod().equals("OPTIONS")) {
+			response.addHeader("Access-Control-Allow-Origin", "http://143.229.6.40:8080");
+			response.setHeader("Access-Control-Allow-Methods", "GET");
+			response.setHeader("Access-Control-Allow-Headers", "accept, authorization, cache-control");
+			response.setHeader("Access-Control-Allow-Credentials", "true");
+		    }});
     }
 }

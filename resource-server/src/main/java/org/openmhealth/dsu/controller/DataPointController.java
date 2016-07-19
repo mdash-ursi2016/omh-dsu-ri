@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.Iterator;
 
 import static org.openmhealth.dsu.configuration.OAuth2Properties.*;
+import static org.openmhealth.dsu.domain.DashboardProperties.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -67,7 +68,7 @@ public class DataPointController {
     public static final String END_ID_PARAMETER = "end_id";
     public static final String RESULT_OFFSET_PARAMETER = "skip";
     public static final String RESULT_LIMIT_PARAMETER = "limit";
-    public static final String DEFAULT_RESULT_LIMIT = "200";
+    public static final String DEFAULT_RESULT_LIMIT = "1000";
     
     @Autowired
     private DataPointService dataPointService;
@@ -86,11 +87,6 @@ public class DataPointController {
      */
     // TODO confirm if HEAD handling needs anything additional
     // only allow clients with read scope to read data points
-    /*  @CrossOrigin(origins = "http://143.229.6.40/",
-		 methods = {HEAD, GET},
-		 allowedHeaders = "Accept, Cache-Control, Authorization",
-		 allowCredentials = "true",
-		 exposedHeaders = "Access-Control-Allow-Origin, Access-Control-Allow-Methods Access-Control-Allow-Headers, Access-Control-Allow-Credentials")*/
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
     // TODO look into any meaningful @PostAuthorize filtering
     @RequestMapping(value = "/dataPoints", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
@@ -130,39 +126,6 @@ public class DataPointController {
     public String getEndUserId(Authentication authentication) {
         return ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
     }
-
-    /*
-    public HttpHeaders createHeaders() {
-	// Initialize headers and lists
-	HttpHeaders headers = new HttpHeaders();
-	List exposedHeaders = new LinkedList();
-	List allowedHeaders = new LinkedList();
-	List allowedMethods = new LinkedList();
-
-	// Add Strings to exposedHeaders list
-	exposedHeaders.add("Access-Control-Allow-Origin");
-	exposedHeaders.add("Access-Control-Allow-Methods");
-	exposedHeaders.add("Access-Control-Allow-Headers");
-	exposedHeaders.add("Access-Control-Allow-Credentials");
-	
-
-	// Add Strings to allowedHeaders list
-	allowedHeaders.add("Accept");
-	allowedHeaders.add("Cache-Control");
-	allowedHeaders.add("Authorization");
-	
-	// Add HttpMethods to allowedMethods list
-	allowedMethods.add(GET);
-	allowedMethods.add(HEAD);
-
-	headers.setAccessControlAllowHeaders(allowedHeaders);
-	headers.setAccessControlAllowMethods(allowedMethods);
-	headers.setAccessControlAllowOrigin("http://143.229.6.40/");
-	headers.setAccessControlAllowCredentials(true);
-	//headers.setAccessControlExposeHeaders(exposedHeaders);
-	return headers;
-    }
-    */
     
     /**
      * Reads a data point.
@@ -191,11 +154,34 @@ public class DataPointController {
         return new ResponseEntity<>(dataPoint.get(), OK);
     }
 
+    /*                                                                                                                                 
+     * Returns the most recent heart-rate data points
+     * for the authenticated user 
+     * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive
+     * @return a list of recent heart-rate DataPoints
+     */
 
+    @RequestMapping(value = "/heartRate", method = GET)
+    public
+    @ResponseBody
+    ResponseEntity<Iterable<DataPoint>> currentBPM(@RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER) OffsetDateTime createdOnOrAfter,
+				      Authentication authentication) {
+
+	String endUserId = getEndUserId(authentication);
+	DataPointSearchCriteria searchCriteria = createSearchCriteria(endUserId, DASH_HR_NAMESPACE, DASH_HR_NAME, DASH_HR_VERSION, createdOnOrAfter, null);
+	Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, null, null);
+
+	HttpHeaders headers = new HttpHeaders();
+
+	return new ResponseEntity<>(dataPoints, headers, OK);
+    }
+
+    
     /**
      * Write multiple data points.
      *
      * @param dataPoints the data points to write
+     * @return CONFLICT or CREATED ResponseEntity
      */
     // only allow clients with write scope to write data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
@@ -230,6 +216,7 @@ public class DataPointController {
      * Writes a data point.
      *
      * @param dataPoint the data point to write
+     * @return CONFLICT or CREATED ResponseEntity
      */
     // only allow clients with write scope to write data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
@@ -267,6 +254,7 @@ public class DataPointController {
      * Deletes a data point.
      *
      * @param id the identifier of the data point to delete
+     * @return An HTTP response based on whether the point was found and deleted
      */
     // only allow clients with delete scope to delete data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_DELETE_SCOPE + "')")
@@ -282,13 +270,19 @@ public class DataPointController {
     }
 
     /**
-     * Deletes multiple data points within a range of IDs
+     * Deletes multiple data points using the multi-point search criteria
      *
-     * @param startId, the id to use as the start point of deletion, inclusive
-     * @param endId, the id to use as the end point of the deletion, inclusive
+     * @param schemaNamespace the namespace of the schema the data points conform to
+     * @param schemaName the name of the schema the data points conform to
+     * @param schemaVersion the version of the schema the data points conform to
+     * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive
+     * @param createdBefore the latest creation timestamp of the data points to return, exclusive
+     * @param offset the number of data points to skip
+     * @param limit the number of data points to return
+     * @return An HTTP response based on whether the points were found and deleted
      */
     // only allow clients with delete scope to delete data points
-    
+
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_DELETE_SCOPE + "')")
     @RequestMapping(value = "/dataPoints/bulk_delete", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteDataPoints(@RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
@@ -299,10 +293,9 @@ public class DataPointController {
 					      @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
 					      @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit,
 					      Authentication authentication) {
-	String endUserId = getEndUserId(authentication);
-	
-	DataPointSearchCriteria searchCriteria = createSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion, createdOnOrAfter, createdBefore);
 
+	String endUserId = getEndUserId(authentication);
+	DataPointSearchCriteria searchCriteria = createSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion, createdOnOrAfter, createdBefore);
 	Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);	
 
 	try {
@@ -313,10 +306,23 @@ public class DataPointController {
 
 	return new ResponseEntity<>(OK);
     }
-    
-    public DataPointSearchCriteria createSearchCriteria(String id, String namespace, String name, String version, OffsetDateTime createdOnOrAfter, OffsetDateTime createdBefore) {
-	DataPointSearchCriteria res = new DataPointSearchCriteria(id, namespace, name, version);
 
+
+    /*
+     * A helper function for creating the DataPointSearchCriteria
+     *
+     * @param id the endUserId
+     * @param namespace the namespace of the schema the data points conform to
+     * @param name the name of the schema the data points conform to
+     * @param version the version of the schema the data points conform to
+     * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive
+     * @param createdBefore the latest creation timestamp of the data points to return, exclusive
+     * @return DataPointSearchCritera with the given parameters 
+     */
+    public DataPointSearchCriteria createSearchCriteria(String id, String namespace, String name, String version,
+							OffsetDateTime createdOnOrAfter, OffsetDateTime createdBefore) {
+
+	DataPointSearchCriteria res = new DataPointSearchCriteria(id, namespace, name, version);
 	if (createdOnOrAfter != null && createdBefore != null) {
 	    res.setCreationTimestampRange(Range.closedOpen(createdOnOrAfter.minusMinutes(1), createdBefore.minusMinutes(1)));
 	}
