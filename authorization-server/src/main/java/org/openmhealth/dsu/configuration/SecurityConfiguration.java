@@ -68,13 +68,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 	http //.requiresChannel().anyRequest().requiresSecure()
 	    //.and()
+	    .requestMatchers().antMatchers("/oauth/authorize","/oauth/confirm_access")
+	    .and()
 	    .authorizeRequests()
 	      .antMatchers("/clients", "/users").permitAll()
 	      .anyRequest().authenticated()
 	      .and()
 	    .formLogin()
 	      .loginPage("/login").permitAll()
-	    //.failureUrl("/login?error")
        	      .and()
 	    .csrf().disable();
     }

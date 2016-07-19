@@ -153,15 +153,14 @@ configure(project(":dashboard")) {
     }
     compile("org.springframework.boot:spring-boot-starter-jetty")
     // end::jetty[]
-
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-
     // tag::actuator[]
     compile("org.springframework.boot:spring-boot-starter-actuator")
     // end::actuator[]
+    compile ("commons-codec:commons-codec:1.6")
+    compile ("org.json:json:20160212")
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
-
     }
 
     task copyArchiveJarToDockerContext(dependsOn: assemble, type: Copy) {

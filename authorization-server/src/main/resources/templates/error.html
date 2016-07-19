@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:utext="${error.status}">Error</title>
+  </head>
+  <body>
+    <div id="this">
+      <div class="errorText">
+	<h1 class="errorName" th:utext="${error.name}">Error</h1>
+	<p class="errorTime" th:utext="${error.timeStamp}"/>
+	<p class="errorMessage" th:utext="${error.message}"/>
+      </div>
+      <div class="userMessage">
+	<a href="http://143.229.6.40:8080"> Go back home </a>
+      </div>
+    </div>
+  </body>
+</html>

@@ -39,3 +39,7 @@ spring:
 logging:
   level:
     org.springframework: INFO
+
+error:
+  whitelabel:
+    enabled: false

@@ -79,20 +79,6 @@ public class EndUserController {
     public String signup() {
         return "user_registration";
       }
-
-
-    /**
-     * Directs users to the visualizations page
-     * @return a String for the visualizations page
-     
-    @PreAuthorize("#oauth2.isUser()")
-    @RequestMapping(value = "/users/visualization", method = GET)
-    public String visualization(Authentication auth, ModelMap model) {
-	Optional<EndUser> user = repository.findOne(auth.getName());
-	model.addAttribute("user", user.get());
-	return "users/visualization";
-    }
-    */
     
     /**
      * Registers a new user.
@@ -105,24 +91,24 @@ public class EndUserController {
     public ResponseEntity<?> registerUser(@RequestBody EndUserRegistrationData registrationData) {
 
         if (registrationData == null) {
-            return new ResponseEntity<>("Bad request, this is null", BAD_REQUEST);
+            return new ResponseEntity<>(BAD_REQUEST);
         }
 
         Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations = validator.validate(registrationData);
 
         if (!constraintViolations.isEmpty()) {
-            //return new ResponseEntity<>(asErrorMessageList(constraintViolations), BAD_REQUEST);
-	    return new ResponseEntity<>("Constraint Violation", BAD_REQUEST);
+            return new ResponseEntity<>(asErrorMessageList(constraintViolations), BAD_REQUEST);
+	    //return new ResponseEntity<>("Constrain Violations", BAD_REQUEST);
 	}
 
         if (endUserService.doesUserExist(registrationData.getUsername()) ||
 	    endUserService.doesEmailExist(registrationData.getEmailAddress())) {
-            return new ResponseEntity<>("Bad request", CONFLICT);
+            return new ResponseEntity<>(CONFLICT);
         }
 
         endUserService.registerUser(registrationData);
 
-        return new ResponseEntity<>("Created", CREATED);
+        return new ResponseEntity<>(CREATED);
     }
 
     protected List<String> asErrorMessageList(Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations) {
@@ -137,7 +123,7 @@ public class EndUserController {
      */
     @PreAuthorize("#oath2.isUser()")
     @RequestMapping(value = "/users/del", method = POST)
-    public ResponseEntity<?> deleteUser(Authentication authentication) {
+    public ResponseEntity<String> deleteUser(Authentication authentication) {
 	String user = ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
 	endUserService.delete(user);
 	return new ResponseEntity<>("Success",OK);
