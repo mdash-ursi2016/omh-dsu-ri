@@ -34,7 +34,7 @@ spring:
     username: postgres
   jackson:
     serialization:
-      INDENT_OUTPUT: true
+    INDENT_OUTPUT: true
 
 logging:
   level:
