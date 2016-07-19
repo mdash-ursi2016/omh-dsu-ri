@@ -1,0 +1,30 @@
+.errorText {
+    padding: 5%;
+    margin: 10px;
+    background-color: #4BC0C0;
+    color: #F2F2F2;
+    line-height: 1.5em;
+    border: 2px dashed #F2F2F2;
+    border-radius: 70px;
+    box-shadow: 0 0 0 4px #4BC0C0, 2px 1px 6px 4px rgba(10, 10, 0, 0.5);
+    font-weight: normal;
+    text-align: center;
+}
+
+.errorName {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.errorMessage {
+    font-size: 20px;
+}
+
+.userMessage a {
+    font-size: 30px;
+    color: #F2F2F2;
+    border: 2px solid #F2F2F2;
+    padding: .5em 1em;
+    text-transform: uppercase;
+    display: inline-block;
+}

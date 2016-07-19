@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Confirm Access</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" th:href="@{/css/confirmation.css}"/>
+    <link rel="stylesheet" th:href="@{/css/body.css}"/>
+  </head>
+  <body>
+    <div id="this">
+    <h1> Confirmation </h1>
+    <div class="userMessage">
+      Do you authorize <span th:text="${authorizationRequest.clientId}">client</span> at <span th:text="${authorizationRequest.redirectUri}">redirectUri</span> to access your protected resources?
+    </div>
+
+    <!-- Scopes list and form -->
+    <form id="confirmationForm" name="confirmationForm" action="/oauth/authorize" method="post">
+      <input name="user_oauth_approval" value="true" type="hidden"/>
+      <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_cs\
+rf.token}"-->
+      
+      <div th:if="${authorizationRequest.scope}!=null">
+	<ul th:each="scope : ${authorizationRequest.scope}">
+	  <li><span th:utext="${scope}"/><input type="radio" th:name="${scope}" value="true"> Approve </input> <input type="radio" th:name="${scope}" value="false"> Deny </input>
+	  </li>
+	</ul>
+      </div>
+      <input name="authorize" value="Authorize" type="submit"/>
+    </form>
+
+    <!-- Denial form for scopes==null -->
+    <div th:if="${authorizationRequest.scope} == null">
+      <form id="denialForm" name="denialForm" th:action="/oauth/authorize" method="post">
+	<input name="user_oauth_approval" value="false" type="hidden"/>
+	<!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"-->
+	<label><input name="deny" value="Deny" type="submit"/> Client has not provided scopes. Denial is suggested.</label>
+      </form>
+    </div>
+
+    </div>
+  </body>
+</html>

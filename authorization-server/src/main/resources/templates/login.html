@@ -3,25 +3,29 @@
   <head>
     <title>Login</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/css/userPage.css}"/>
+    <link rel="stylesheet" th:href="@{/css/body.css}"/>
   </head>
   <body>
-    <h1>Please Login</h1>
-    <p>Example user: user / password </p>
-
-    <form method="post">
-      <div th:if="${param.error}" class="alert alert-error">
-	Invalid username and password.
-      </div>
-      <div th:if="${param.logout}" class="alert alert-success">
-	You have been logged out.
-      </div>
-      <label>Username</label>:
-      <input type="text" id="username" name="username" required="true" autofocus="true" autocorrect="off" /> <br/>
-      <label for="password">Password</label>:
-      <input type="password" id="password" name="password"/> <br/>
-      <!--<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>-->
-      <input type="submit" value="Submit"/>
-    </form>
-    <p>If you are new to Vassar OMH, sign up <a href="/" th:href="@{/users}"> here </a></p>
+    <div id="this">
+      <h1>Welcome</h1>
+      <p>Example user: user / password </p>
+      
+      <form method="post">
+	<div th:if="${param.error}">
+	  Invalid username and password.
+	</div>
+	<div th:if="${param.logout}">
+	  You have been logged out.
+	</div>
+	<label for="username">Username</label>:
+	<input type="text" id="username" name="username" required="true" autofocus="true" autocorrect="off" /> <br/>
+	<label for="password">Password</label>:
+	<input type="password" id="password" name="password" required="true"/> <br/>
+	<!--<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>-->
+	<input type="submit" value="Submit"/>
+      </form>
+      <p>If you are new to Vassar OMH, sign up <a href="/" th:href="@{/users}"> here </a></p>
+    </div>
   </body>
 </html>
