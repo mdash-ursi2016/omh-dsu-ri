@@ -29,16 +29,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.ModelMap;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.Optional;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
@@ -67,8 +69,15 @@ public class EndUserController {
      * @return a String for the login page
      */
     @RequestMapping(value = "/login", method = GET)
-    public String login() {
-	return "login";
+    public ModelAndView login(@RequestParam(value = "error", required = false) String error,
+			@RequestParam(value = "logout", required = false) String logout, Map<String,String> map) {
+	if (error != null) {
+	    map.put("error", error);
+	}
+	if (logout != null) {
+	    map.put("logout", logout);
+	}
+	return new ModelAndView("login", map);
     }
 
     /**

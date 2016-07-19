@@ -2,22 +2,10 @@
   <head>
     <title>Home Page</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" th:href="@{/css/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{/css/userPage.css}"/>
+    <link rel="stylesheet" th:href="@{/css/body.css}"/>
   </head>
   <body>
-    <!--Nav bar: Home About Git Client_Registration User_Login-->
-    <ul>
-      <li><a href="/" th:href="@{/}">Home</a></li>
-      <li><a href="/about" th:href="@{/about}">About Us</a></li>
-      <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
-      <li><a class="active" href="/clients" th:href="@{/clients}">Client Registration</a></li>
-      <li class="dropdown">
-	<a class="dropbtn" href="/users" th:href="@{/users}">User Registration</a>
-	<div class="dropdown-content">
-	  <a href="/users/visualization" th:href="@{/users/visualization}"> Visualization </a>
-	</div>
-      </li>
-    </ul>
     <h1>Client Registration</h1>
     <p> This is where a client would register </p>
   </body>
