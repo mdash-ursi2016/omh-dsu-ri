@@ -32,11 +32,6 @@ public class DashboardController {
 	
 	return "visualization";
     }
-    
-    @RequestMapping(value = "/clients", method = RequestMethod.GET)
-    public String clientSignup() {
-	return "client_registration";
-    }
 
     private String createOAuthAuthorizeUrl(){
 	String url = "http://143.229.6.40/oauth/authorize";

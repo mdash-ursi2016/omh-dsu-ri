@@ -35,7 +35,6 @@ function getData() {
     xhr.open("GET", url, true);
     xhr.setRequestHeader("accept", "application/json");
     xhr.setRequestHeader("Authorization", "Bearer " + getByName("token"));
-    //xhr.setRequestHeader("Authorization", "Bearer a1abbfa3-90f8-4af7-b969-cc415cb4c330"); //Token for dashboard
     xhr.setRequestHeader("cache-control", "no-cache");
     xhr.send();
 }
