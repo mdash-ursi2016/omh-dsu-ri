@@ -1,25 +1,32 @@
-//var token = $("meta[name='_csrf']").attr("content");
-//var header = $("meta[name='_csrf_header']").attr("content");
-
-newUser = function() {
+newClient = function() {
     var data = JSON.stringify({
-	"username": username.value,
-	"password": password.value,
-	"email_address": emailAddress.value
+	"id": id.value,
+	"redirectUri": redirectUri.value,
+	"isMobileApp": isMobileApp.value
     });
+
+    document.getElementById("test1").innerHTML = isMobileApp.value;
+    
+    document.getElementById("test2").innerHTML = data;
+    
+    /*
     var xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
-    xhr.addEventListener("readystatechange", function () {
+    xhr.addEventListener("readystatechange", function() {
 	if (this.readyState===4) {
 	    document.getElementById("res").innerHTML = this.statusText;
 	}
     });
-    xhr.open("POST", "http://143.229.6.40:80/users");
+
+    xhr.open("POST", "http://143.229.6.40:80/clients");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Cache-Control", "no-cache");
     //xhr.setRequestHeader(header, token);
     xhr.send(data);
-
+    */
+    
     document.getElementById("form").reset();
 }
+
+

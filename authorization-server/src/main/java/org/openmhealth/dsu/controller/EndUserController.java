@@ -21,7 +21,6 @@ import org.openmhealth.dsu.domain.EndUserRegistrationData;
 import org.openmhealth.dsu.service.EndUserService;
 import org.openmhealth.dsu.domain.EndUser;
 import org.openmhealth.dsu.domain.EndUserUserDetails;
-import org.openmhealth.dsu.repository.EndUserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -60,9 +59,6 @@ public class EndUserController {
 
     @Autowired
     private EndUserService endUserService;
-
-    @Autowired
-    private EndUserRepository repository;
     
     /**
      * Directs users to a login page

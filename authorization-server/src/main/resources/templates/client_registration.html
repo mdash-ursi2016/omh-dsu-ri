@@ -1,12 +1,33 @@
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
-    <title>Home Page</title>
+    <title>Client Registration</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" th:href="@{/css/userPage.css}"/>
     <link rel="stylesheet" th:href="@{/css/body.css}"/>
+    <script type="text/javascript" th:src="@{/js/registerClient.js}"></script>
   </head>
   <body>
-    <h1>Client Registration</h1>
-    <p> This is where a client would register </p>
+    <div id="this">
+
+      <h1>Client Registration</h1>
+      <p> Example client: client_id / redirect_uri / mobile_app </p>
+
+      <div id="test1"></div>
+      <div id="test2"></div>
+      
+      <form id="form">
+	<div id="res"></div>
+	<label for="id">Client Id</label>:
+	<input type="text" id="id" name="id" required="true" autofocus="true" autocorrect="off"/> <br/>
+	<label for="redirectUri">Redirect URI</label>:
+	<input type="text" id="redirectUri" name="redirectUri" required="true"/> <br/>
+	<label for="isMobileApp">Client Type</label>:
+	<input type="radio" name="isMobileApp" id="isMobileApp_T" value="true" checked="checked"> Mobile App </input <br/>
+	<input type="radio" name="isMobileApp" id="isMobileApp_F" value="false"> Web Client </input>
+	<button type="button" onclick="newClient()">Submit </button>
+      </form>
+      
+    </div>
   </body>
 </html>
