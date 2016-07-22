@@ -1,0 +1,76 @@
+<!DOCTYPE html  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Visualizations</title>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" th:href="@{/css/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" th:href="@{/css/bower_components/plottable/plottable.css}"/>
+    <link rel="stylesheet" th:href="@{/css/omh-web-visualizations-all.css}"/>
+  </head>
+  <body>
+    <ul>
+      <li><a href="/" th:href="@{/}">Home</a></li>
+      <li><a href="/about" th:href="@{/about}">About Us</a></li>
+      <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
+      <li><a href="http://143.229.6.40:80/clients">Client Registration</a></li>
+      <li class="dropdown">
+	<a class="dropbtn" href="http://143.229.6.40:80/users">User Registration </a>
+	<div class="dropdown-content">
+	  <a class ="active" href="/visualization" th:href="@{/visualization}"> Visualization </a>
+	</div>
+      </li>
+      <li> 
+	<div align="right">
+	  <form th:action="@{http://143.229.6.40:80/logout}" method="post">
+	    <input type="submit" value="Logout"/>
+	  </form>
+	</div>
+      </li>
+    </ul>
+
+    <div id="page-text">
+      <h1>Vassar OMH: Live Visualization</h1>
+      <p>Hello! Here you can visualize your data!</p>
+      
+      <div style="font-size=300%" id="content">-- bpm</div>
+
+      <div class="test1"></div>
+      <div class="test2"></div>
+      <div class="test3"></div>
+      <br/><br/>
+      
+      <form id="chart_form" name="chart_form">
+	<label for="schema_name"> Which set of data would you like to chart?</label><br/>
+	<select class="schema_name"  name="schema_name">
+	  <option value="heart-rate">Heart Rate</option>
+	  <option value="step-count">Step Count</option>
+	</select> <br/>
+	<button class="select_button" type="button" onclick="getChartData()"> Chart </button>
+      </form>
+      
+      <div id="chart"></div>
+
+      <div class="demo_chart_container">
+	<div class="loading_message"></div>
+	<svg class="demo_chart"></svg>
+      </div>
+      
+      <div class="additional_information">
+	<div class="dataPoint_details"></div>
+      </div>
+      
+      <p><a href="/" th:ref="@{/}">Back to home page</a></p>
+    </div>
+    
+    <script type="text/javascript" th:src="@{/js/bpmDataFetch.js}"></script>
+    <!-- <script type="text/javascript" th:src="@{/js/chartDataFetchOrig.js}"></script> -->
+    <script type="text/javascript" th:src="@{/js/chartDataFetch.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bower_components/d3/d3.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bower_components/d3-tip/index.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bower_components/plottable/plottable.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bower_components/moment/moment.js}"></script>
+    <script type="text/javascript" th:src="@{/js/omh-web-visualizations-all.js}"></script>
+
+  </body>
+</html>

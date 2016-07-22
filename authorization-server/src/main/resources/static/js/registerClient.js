@@ -2,10 +2,8 @@ newClient = function() {
     var data = JSON.stringify({
 	"id": id.value,
 	"redirectUri": redirectUri.value,
-	"isMobileApp": isMobileApp.value
+	"isMobileApp": form.elements["isMobileApp"].checked
     });
-
-    document.getElementById("test1").innerHTML = isMobileApp.value;
     
     document.getElementById("test2").innerHTML = data;
     
