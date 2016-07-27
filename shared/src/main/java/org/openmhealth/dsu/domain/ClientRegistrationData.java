@@ -12,6 +12,7 @@ public class ClientRegistrationData {
     
     private String id;
     private String redirectUri;
+    private String password;
     private boolean isMobileApp;
 
     @NotNull
@@ -22,6 +23,16 @@ public class ClientRegistrationData {
 
     public void setId(String id) {
 	this.id = id;
+    }
+
+    @NotNull
+    @Size(min = 1)
+    public String getPassword() {
+	return password;
+    }
+
+    public void setPassword(String password) {
+	this.password = password;
     }
 
     @NotNull

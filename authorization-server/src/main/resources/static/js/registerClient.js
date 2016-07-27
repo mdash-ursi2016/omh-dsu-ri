@@ -1,8 +1,9 @@
 newClient = function() {
     var data = JSON.stringify({
 	"id": id.value,
-	"redirectUri": redirectUri.value,
-	"isMobileApp": form.elements["isMobileApp"].checked
+	"password":password.value,
+	"redirect_uri": redirectUri.value,
+	"is_mobile_app": form.elements["isMobileApp"].checked
     });
     
     document.getElementById("test2").innerHTML = data;
@@ -13,6 +14,7 @@ newClient = function() {
     xhr.addEventListener("readystatechange", function() {
 	if (this.readyState===4) {
 	    document.getElementById("res").innerHTML = this.statusText;
+	    document.getElementById("res").innerHTML += " + " + this.responseText;
 	}
     });
 

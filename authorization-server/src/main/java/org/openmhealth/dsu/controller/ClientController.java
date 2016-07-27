@@ -1,6 +1,8 @@
 package org.openmhealth.dsu.controller;
 
 import org.openmhealth.dsu.domain.ClientRegistrationData;
+import org.openmhealth.dsu.domain.SimpleClientDetails;
+import org.openmhealth.dsu.service.SpringDataClientDetailsServiceImpl;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,15 +11,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
+import org.springframework.security.oauth2.provider.ClientRegistrationService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.openmhealth.dsu.configuration.OAuth2Properties.*;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.util.stream.Collectors;
 import java.util.Optional;
 import java.util.Set;
+import java.util.List;
 
 /**
  * A controller that manages client accounts
@@ -30,8 +39,9 @@ public class ClientController {
     private Validator validator;
 
     @Autowired
-    private SpringDataClientDetailsServiceImpl clientDetailsService;
+    private ClientRegistrationService service;
 
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
     /**
      * Directs clients to the client registration page
@@ -53,33 +63,30 @@ public class ClientController {
      **/
     @RequestMapping(value = "/clients", method = POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> clientRegistration(@RequestBody ClientRegistrationData registrationData) {
-	ClientDetails clientDetails = createClientDetails(registrationData);
+	BaseClientDetails baseClientDetails = createClientDetails(registrationData);
 	
-	if (clientDetails == null) {
+	if (baseClientDetails == null) {
 	    return new ResponseEntity<>(BAD_REQUEST);
 	}
 
-	Set<ConstraintViolation<ClientDetails>> constraintViolations = validator.validate(clientDetails);
+	Set<ConstraintViolation<ClientRegistrationData>> constraintViolations = validator.validate(registrationData);
 
 	if (!constraintViolations.isEmpty()) {
 	    return new ResponseEntity<>(asErrorMessageList(constraintViolations), BAD_REQUEST);
 	}
-
-	SimpleClientDetails client = new SimpleClientDetails();
-	try {
-	    client = clientDetailsService.loadClientByClientId(clientDetails.getClientId());
-	} catch (Exception e) {
-	    clientDetailsService.addClientDetails(clientDetails);
-	    return new ResponseEntity<>(CREATED);
-	}
 	
-	return new ResponseEntity<>(CONFLICT);
+	try { // Does not currently work. Saves to mongodb
+	    service.addClientDetails(baseClientDetails);
+	    return new ResponseEntity<>(baseClientDetails.getClientSecret(), CREATED);
+	} catch (Exception e) {
+	    return new ResponseEntity<>(CONFLICT);
+	}
     }
 
     /**
      * From EndUserController (by Emerson Farrugia)
      **/
-    protected List<String> asErrorMessageList(Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations) {
+    protected List<String> asErrorMessageList(Set<ConstraintViolation<ClientRegistrationData>> constraintViolations) {
 	return constraintViolations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
     }
 
@@ -88,37 +95,24 @@ public class ClientController {
      * @param registrationData input registration data
      * @return ClientDetails created with the registration data
      **/
-    private ClientDetails createClientDetails(ClientRegistrationData registrationData) {
+    private BaseClientDetails createClientDetails(ClientRegistrationData registrationData) {
 	if (registrationData == null) {
 	    return null;
 	}
-	
-	BaseClientDetails clientDetails = new BaseClientDetails();
-	clientDetails.setClientId(registrationData.getId());
-	clientDetails.setRegisteredRedirectUri(registrationData.getRedirectUri());
 
-	/* Collection<String> grantTypes */
-	if (registrationData.isMobileApp()) {
-	    /* grantTypes = implicit */
+	String clientId = registrationData.getId();
+	String resourceId = DATA_POINT_RESOURCE_ID;
+	String scopes = DATA_POINT_READ_SCOPE + ", " + DATA_POINT_WRITE_SCOPE;
+	String grantTypes = null; 
+	if (registrationData.isMobileApp()){
+	    grantTypes = "implicit";
 	} else {
-	    /* grantTypes = authorizationCode */
+	    grantTypes = "authorization_code";
 	}
-	clientDetails.setAuthorizedGrantTypes(grantTypes);
-	
-	/*
-	setAccessTokenValiditySeconds(Integer accessTokenValiditySeconds)
-	    voidsetAdditionalInformation(Map<String,?> additionalInformation)
-	    voidsetAuthorities(Collection<? extends org.springframework.security.core.GrantedAuthority> authorities)
-	    voidsetAuthorizedGrantTypes(Collection<String> authorizedGrantTypes)
-	    voidsetAutoApproveScopes(Collection<String> autoApproveScopes)
-	    voidsetClientId(String clientId)
-	    voidsetClientSecret(String clientSecret)
-	    voidsetRefreshTokenValiditySeconds(Integer refreshTokenValiditySeconds)
-	    voidsetRegisteredRedirectUri(Set<String> registeredRedirectUris)
-	    voidsetResourceIds(Collection<String> resourceIds)
-	    voidsetScope(Collection<String> scope) 
-	*/
-	
-	return clientDetails;
+	String authorities = CLIENT_ROLE;
+
+	BaseClientDetails baseClientDetails = new BaseClientDetails(clientId,resourceId,scopes,grantTypes,authorities);
+	baseClientDetails.setClientSecret(passwordEncoder.encode(registrationData.getPassword()));
+	return baseClientDetails;
     }
 }
