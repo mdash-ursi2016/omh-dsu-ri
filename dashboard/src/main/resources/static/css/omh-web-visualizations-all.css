@@ -44,14 +44,14 @@
   cursor: default;
 }
 .plottable .axis .tick-label {
-  fill: #a4a4a4;
+  fill: #262626;
 }
 .plottable .gridlines-axis .tick-label-container {
   -webkit-transform: translateX(6px);
           transform: translateX(6px);
 }
 .plottable .axis-label text {
-  fill: #a4a4a4;
+  fill: #262626;
   text-transform: none;
   font-size: 12px;
   font-weight: normal;
@@ -73,7 +73,7 @@
           transform: translateX(-5px);
 }
 .plottable .legend text {
-  fill: #a4a4a4;
+  fill: #262626;
   font-size: 12px;
   font-weight: normal;
   line-height: normal;
@@ -88,9 +88,9 @@
   width: auto;
   height: auto;
   padding: 10px 15px;
-  border: 1px solid #dedede;
+  border: 1px solid #F2F2F2;
   border-radius: 10px;
-  background-color: #fff;
+  background-color: #F2F2F2;
   font-family: "Helvetica Neue", sans-serif;
   text-align: center;
 }
@@ -104,7 +104,7 @@
 .omh-tooltip .provider {
   font-size: 12px;
   text-transform: capitalize;
-  color: #dedede;
+  color: #F2F2F2;
 }
 .omh-chart-container {
   padding-bottom: 30px;
@@ -116,7 +116,7 @@
 }
 .omh-chart-container .zoom-hint-label text {
   font-size: 12px;
-  fill: #a4a4a4;
+  fill: #262626;
   font-style: italic;
   font-weight: normal;
 }
@@ -125,7 +125,7 @@
   opacity: 0;
 }
 .omh-chart-container .zoom-hint-label .background-fill {
-  fill: #fff;
+  fill: #F2F2F2;
   opacity: 0.9;
 }
 .omh-chart-container .omh-chart-toolbar {
@@ -147,7 +147,7 @@
 .omh-chart-container .omh-chart-toolbar .time-button,
 .omh-chart-container .omh-chart-toolbar .previous-time-period-button,
 .omh-chart-container .omh-chart-toolbar .next-time-period-button {
-  color: #dedede;
+  color: #262626;
   margin-left: 10px;
   cursor: pointer;
   font-weight: normal;
@@ -160,8 +160,9 @@
 .omh-chart-container .omh-chart-toolbar .time-button.active,
 .omh-chart-container .omh-chart-toolbar .previous-time-period-button.active,
 .omh-chart-container .omh-chart-toolbar .next-time-period-button.active {
-  color: #a4a4a4;
+  color: #262626;
 }
+
 .omh-chart-container .omh-chart-toolbar .zoom-button {
   font-size: 16px;
 }

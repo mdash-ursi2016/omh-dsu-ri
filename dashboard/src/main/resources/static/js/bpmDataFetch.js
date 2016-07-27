@@ -1,4 +1,5 @@
 var thisVar = setInterval(getBpmData, 2000);
+var tok = getByName("token");
 
 function getByName(name) {
     var cookies = document.cookie.split('; ');
@@ -34,7 +35,7 @@ function getBpmData() {
     // Send request with the necessary headers
     xhr.open("GET", url, true);
     xhr.setRequestHeader("accept", "application/json");
-    xhr.setRequestHeader("Authorization", "Bearer " + getByName("token"));
+    xhr.setRequestHeader("Authorization", "Bearer " + tok);
     xhr.setRequestHeader("cache-control", "no-cache");
     xhr.send();
 }
@@ -43,10 +44,10 @@ function getBpmData() {
 function getBPM(dataPoints) {
     if (dataPoints.length>0) {
 	for (var i=0; i<dataPoints.length; i++) {	
-	    document.getElementById("content").innerHTML = dataPoints[i].body.heart_rate.value + " bpm";
+	    document.getElementById("bpm-box").innerHTML = dataPoints[i].body.heart_rate.value + " bpm";
 	}
     } else {
-	document.getElementById("content").innerHTML = "-- bpm";
+	document.getElementById("bpm-box").innerHTML = "-- bpm";
     }
 }
 

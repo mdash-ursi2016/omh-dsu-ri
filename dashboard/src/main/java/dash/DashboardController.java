@@ -2,11 +2,12 @@ package dash;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import org.springframework.ui.ModelMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
 
 import static dash.properties.ClientProperties.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Controller // For RestController annotation, response is direct, as opposed to a direction to a template
 public class DashboardController {
@@ -28,8 +29,8 @@ public class DashboardController {
     }
 
     @RequestMapping(value = "/access", method = RequestMethod.GET)
-    public String getDash() {
-	
+    public String getDash(HttpServletRequest request) {
+	System.out.println("GetRemoteUser: " + request.getRemoteUser());
 	return "visualization";
     }
 

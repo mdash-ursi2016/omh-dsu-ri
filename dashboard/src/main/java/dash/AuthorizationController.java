@@ -23,37 +23,23 @@ import static dash.properties.ClientProperties.*;
 @RestController
 public class AuthorizationController {
 
-    @RequestMapping(value = "/hello", method = RequestMethod.GET)
-    public String index() {
-	return "Greetings from Spring Boot! -- Says Alex";
-    }
-
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public String test(@RequestParam(value = "name") String name, @RequestParam(value = "test") String tester) {
-	return "The name is: " + name + " and the value is: " + tester;
-    }
-
     @RequestMapping(value = "/code", method = RequestMethod.GET)
-    public void processCode(@RequestParam(value = "code", required = false) String code,
+    public void processCode(@RequestParam(value = "code") String code,
 			    HttpServletResponse response) throws Exception {
 
-	if (code == null) {
-	    response.sendRedirect("http://143.229.6.40:8080/test?name=failure&test=No%20Code");
-	} else {
-	    // Request Access Token
-	    String target = createOAuthTokenUrl();
-	    String parameters = createOAuthTokenParameters(code);
-	    String json = sendTokenPost(target, parameters);
+	// Request Access Token
+	String target = createOAuthTokenUrl();
+	String parameters = createOAuthTokenParameters(code);
+	String json = sendTokenPost(target, parameters);
 
-	    // Prepare HttpServletResponse
-	    Cookie cookie = getCookie(json);	    
-	    response.addCookie(cookie);
-	    response.sendRedirect("http://143.229.6.40:8080/access");
-	}
+	// Prepare HttpServletResponse
+	Cookie cookie = getCookie(json);
+	response.addCookie(cookie);
+	response.sendRedirect("http://143.229.6.40:8080/access");
     }
 
 
-    
+
     private String sendTokenPost(String target, String parameters) {
 	String authString = createEncodedAuthString();
 	HttpURLConnection connection = null;
@@ -90,8 +76,6 @@ public class AuthorizationController {
 		builder.append(line + "\n");
 	    }
 	    reader.close();
-
-	    System.out.println(builder.toString());
 	    return builder.toString();
 
 	} catch (Exception e) {
@@ -103,7 +87,7 @@ public class AuthorizationController {
 	}
 
     }
-    
+
 
     private String createOAuthTokenUrl() {
 	String url = "http://143.229.6.40:80/oauth/token";
@@ -137,9 +121,9 @@ public class AuthorizationController {
 	    value = obj.getString("access_token");
 	    return new Cookie("token", value);
 	} else {
-	    return new Cookie("failure", "Error in processing");
+	    return new Cookie("FAILURE", "Error in processing");
 	}
-	
+
     }
 
 }

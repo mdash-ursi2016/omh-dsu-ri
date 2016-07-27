@@ -1089,6 +1089,7 @@
                     if ( settings.toolbar.timespanButtons.visible ) {
 
                         var zoomLevels = {
+			    '1d':1,
                             '1wk': 7,
                             '1m': 30,
                             '3m': 90,
@@ -2158,7 +2159,7 @@
                 var parsedData = {};
                 var quantizationLevels = {};
                 var keyPaths = {};
-
+		
                 //if there is no data, return an empty object
                 if ( !( omhData ) || omhData.length === 0 ) {
                     return parsedData;
