@@ -147,20 +147,20 @@ configure(project(":dashboard")) {
     }
 
     dependencies {
-    // tag::jetty[]
     compile("org.springframework.boot:spring-boot-starter-web") {
     exclude module: "spring-boot-starter-tomcat"
     }
     compile("org.springframework.boot:spring-boot-starter-jetty")
-    // end::jetty[]
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-    // tag::actuator[]
     compile("org.springframework.boot:spring-boot-starter-actuator")
-    // end::actuator[]
-    compile ("commons-codec:commons-codec:1.6")
-    compile ("org.json:json:20160212")
+    compile("org.springframework.boot:spring-boot-starter-security")
+
+    compile 'commons-codec:commons-codec:1.6'
+    compile 'org.json:json:20160212'
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
+
+    runtime "org.yaml:snakeyaml"
     }
 
     task copyArchiveJarToDockerContext(dependsOn: assemble, type: Copy) {
@@ -174,7 +174,7 @@ configure(project(":dashboard")) {
     build.dependsOn copyArchiveJarToDockerContext
 }
 
-// FIXME add integration test support
+// FIXME add integration test support.
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
