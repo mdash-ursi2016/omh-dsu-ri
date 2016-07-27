@@ -154,14 +154,15 @@ public class DataPointController {
         return new ResponseEntity<>(dataPoint.get(), OK);
     }
 
-    /*                                                                                                                                 
+    /**          
      * Returns the most recent heart-rate data points
-     * for the authenticated user 
+     * for the authenticated user for the dashboard
+     *
      * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive
      * @return a list of recent heart-rate DataPoints
-     */
+     **/
 
-    @RequestMapping(value = "/heartRate", method = GET)
+    @RequestMapping(value = "/dash/heartRate", method = GET)
     public
     @ResponseBody
     ResponseEntity<Iterable<DataPoint>> currentBPM(@RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER) OffsetDateTime createdOnOrAfter,
@@ -172,6 +173,36 @@ public class DataPointController {
 	Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, null, null);
 
 	HttpHeaders headers = new HttpHeaders();
+
+	return new ResponseEntity<>(dataPoints, headers, OK);
+    }
+
+
+    
+    // only allow clients with read scope to read data points
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
+    @RequestMapping(value = "/dash/dataPoints", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
+    public
+    @ResponseBody
+    ResponseEntity<Iterable<DataPoint>> readDataPoints(
+	       @RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
+	       @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
+	       // TODO make this optional and update all associated code
+	       @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
+	       Authentication authentication) {
+
+	// determine the user associated with the access token to restrict the search accordingly
+	String endUserId = getEndUserId(authentication);
+
+	DataPointSearchCriteria searchCriteria = createSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion, null, null);
+
+	Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, null, null);
+
+	HttpHeaders headers = new HttpHeaders();
+
+	// FIXME add pagination headers
+	// headers.set("Next");
+	// headers.set("Previous");
 
 	return new ResponseEntity<>(dataPoints, headers, OK);
     }
@@ -308,7 +339,7 @@ public class DataPointController {
     }
 
 
-    /*
+    /**
      * A helper function for creating the DataPointSearchCriteria
      *
      * @param id the endUserId
@@ -318,7 +349,7 @@ public class DataPointController {
      * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive
      * @param createdBefore the latest creation timestamp of the data points to return, exclusive
      * @return DataPointSearchCritera with the given parameters 
-     */
+     **/
     public DataPointSearchCriteria createSearchCriteria(String id, String namespace, String name, String version,
 							OffsetDateTime createdOnOrAfter, OffsetDateTime createdBefore) {
 

@@ -42,11 +42,10 @@ public class OAuth2ResourceServerConfiguration extends ResourceServerConfigurerA
     
     @Override
     public void configure(HttpSecurity http) throws Exception {
-	http //.requiresChannel().anyRequest().requiresSecure()
+	http//.requiresChannel().anyRequest().requiresSecure()
 	    //.and()
             .authorizeRequests()
-	    //   .antMatchers("/dash").permitAll()
-	       .antMatchers(HttpMethod.OPTIONS, "/v1.0.M1/heartRate").permitAll()
+	       .antMatchers(HttpMethod.OPTIONS, "/v1.0.M1/dash/**").permitAll()
 	       .anyRequest().authenticated()
 	    .and()
 	    .headers().addHeaderWriter((request, response) -> {
