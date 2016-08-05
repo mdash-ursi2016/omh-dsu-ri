@@ -11,8 +11,8 @@ import javax.validation.constraints.Size;
 public class ClientRegistrationData {
     
     private String id;
-    private String redirectUri;
     private String password;
+    private String redirectUri;
     private boolean isMobileApp;
 
     @NotNull
@@ -36,7 +36,7 @@ public class ClientRegistrationData {
     }
 
     @NotNull
-    @Size(min = 7) // http://
+    @Size(min = 8) // https://
     public String getRedirectUri() {
 	return redirectUri;
     }
