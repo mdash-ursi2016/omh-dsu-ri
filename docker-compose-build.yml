@@ -14,7 +14,7 @@ authorizationserver:
     - mongo:omh-mongo
     - postgres:omh-postgres
   ports:
-    - "80:8082"
+    - "443:443"
 
 resourceserver:
   build: resource-server/docker
@@ -22,7 +22,7 @@ resourceserver:
     - mongo:omh-mongo
     - postgres:omh-postgres
   ports:
-    - "443:8083"
+    - "8083:8083"
 
 dashboard:
   build: dashboard/docker
