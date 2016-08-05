@@ -1,7 +1,10 @@
-package dash;
+package dash.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ui.ModelMap;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -11,8 +14,8 @@ import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.lang.StringBuilder;
 import java.net.URLEncoder;
-import java.net.HttpURLConnection;
 import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Cookie;
 
@@ -30,19 +33,19 @@ public class AuthorizationController {
 	// Request Access Token
 	String target = createOAuthTokenUrl();
 	String parameters = createOAuthTokenParameters(code);
-	String json = sendTokenPost(target, parameters);
+	String serverResponse = sendTokenPost(target, parameters);
 
 	// Prepare HttpServletResponse
-	Cookie cookie = getCookie(json);
+	Cookie cookie = getCookie(serverResponse);
 	response.addCookie(cookie);
-	response.sendRedirect("http://143.229.6.40:8080/access");
+	response.sendRedirect("https://mdash.cs.vassar.edu:8080/visualization");
     }
 
 
 
     private String sendTokenPost(String target, String parameters) {
 	String authString = createEncodedAuthString();
-	HttpURLConnection connection = null;
+	HttpsURLConnection connection = null;
 
 	BufferedReader reader = null;
 	StringBuilder builder = new StringBuilder();
@@ -50,7 +53,7 @@ public class AuthorizationController {
 
 	try {
 	    URL url = new URL(target);
-	    connection = (HttpURLConnection) url.openConnection();
+	    connection = (HttpsURLConnection) url.openConnection();
 	    connection.setRequestMethod("POST");
 	    connection.setRequestProperty("Authorization", "Basic " + authString);
 	    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -90,7 +93,7 @@ public class AuthorizationController {
 
 
     private String createOAuthTokenUrl() {
-	String url = "http://143.229.6.40:80/oauth/token";
+	String url = "https://mdash.cs.vassar.edu:443/oauth/token";
 	return url;
     }
 
@@ -99,7 +102,7 @@ public class AuthorizationController {
 	parameters += "&client_secret=" + CLIENT_SECRET;
 	parameters += "&grant_type=" + "authorization_code";
 	parameters += "&code=" + code;
-	parameters += "&redirect_uri=" + "http://143.229.6.40:8080/code";
+	parameters += "&redirect_uri=" + "https://mdash.cs.vassar.edu:8080/code";
 	return parameters;
     }
 
@@ -123,7 +126,6 @@ public class AuthorizationController {
 	} else {
 	    return new Cookie("FAILURE", "Error in processing");
 	}
-
     }
 
 }

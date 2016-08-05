@@ -237,7 +237,7 @@
                     var axisConfigs = xAxis.axisConfigurations();
                     var filteredAxisConfigs = [];
                     axisConfigs.forEach( function ( config ) {
-                        if ( config[ 0 ].interval === 'day' || config[ 0 ].interval === 'month' || config[ 0 ].interval === 'year' ) {
+                        if ( config[ 0 ].interval === 'hour' || config[ 0 ].interval === 'day' || config[ 0 ].interval === 'month' || config[ 0 ].interval === 'year' ) {
                             filteredAxisConfigs.push( config );
                         }
                     } );

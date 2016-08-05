@@ -1,0 +1,17 @@
+server:
+  port: 8080
+  ssl:
+    enabled: true
+    key-store: "/opt/omh-dsu-ri/dashboard/keystore.jks"
+    key-store-password: secret
+    key-password: secret
+    key-alias: server
+    protocol: TLS
+
+spring:
+  application:
+    name: Vassar URSI dashboard server
+
+logging:
+  level:
+    org.springframework: INFO

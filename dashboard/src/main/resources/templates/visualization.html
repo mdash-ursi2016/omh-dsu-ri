@@ -13,42 +13,52 @@
       <li><a href="/" th:href="@{/}">Home</a></li>
       <li><a href="/about" th:href="@{/about}">About Us</a></li>
       <li><a href="https://github.com/mdash-ursi2016">Our Github</a></li>
-      <li><a href="http://143.229.6.40:80/clients">Client Registration</a></li>
+      <li><a href="https://mdash.cs.vassar.edu:443/clients">Client Registration</a></li>
       <li class="dropdown">
-	<a class="dropbtn" href="http://143.229.6.40:80/users">User Registration </a>
+	<a class="dropbtn" href="https://mdash.cs.vassar.edu:443/users">User Registration </a>
 	<div class="dropdown-content">
 	  <a class="active" href="/visualization" th:href="@{/visualization}"> Visualization </a>
 	</div>
       </li>
-      <li class="logout-button">
-	<form th:action="@{http://143.229.6.40:80/logout}" method="post">
-	  <input type="submit" value="Logout"/>
-	</form>
-      </li>
+      <div th:switch="${present}">
+	<div th:case="'true'">
+	  <li class="logout-button">
+	    <form th:action="@{https://mdash.cs.vassar.edu:443/logout}" method="post">
+	      <input type="submit" value="Logout"/>
+	    </form>
+	  </li>
+	</div>
+	<div th:case="*">
+	  <li class="login-button">
+	    <form th:action="@{/access}" method="get">
+	      <input type="submit" value="Login"/>
+	    </form>
+	  </li>
+	</div>
+      </div>
     </ul>
 
-    <div id="page-text">
+    <div id="page-text" th:switch="${present}">
       <h1>Vassar OMH: Live Visualization</h1>
-      <p>This is the user dashboard that provides users with visualization tools for their data. <br/> The box below will give you live heart-rate data, while the dropdown list will allow you to choose which data points are charted. </p>
+      
+      <div th:case="'true'">
+      <p>This is the user dashboard that will provide you with visualization tools for your data. <br/><br/> The box below will give you live heart-rate data, while the dropdown list will allow you to choose which data points are charted. </p>
 
       <div id="bpm-box">
 	-- bpm
       </div>
 
-      <div id="test1" class="test1"></div>
-      <div id="test2" class="test2"></div>
-      <div id="test3" class="test3"></div>
-
+      <div id="test"></div>
+      
       <form id="chart_form" name="chart_form">
-	<label for="schema_name"> Which set of data would you like to chart?</label>
+	<label for="schema_name"> Choose a measure: </label> <br/>
 	<select class="schema_name"  name="schema_name">
 	  <option value="heart_rate">Heart Rate</option>
 	  <option value="step_count">Step Count</option>
+	  <option value="minutes_moderate_activity">Minutes of Moderate Activity</option>
 	</select>
 	<button class="select_button" type="button" onclick="getChartData()"> Chart </button>
       </form>
-
-      <div id="chart"></div>
 
       <div class="demo_chart_container">
 	<div class="loading_message"></div>
@@ -56,15 +66,20 @@
       </div>
 
       <div class="additional_information">
-	<div class="dataPoint_details"></div>
+	<div class="dataPoint_details" id="dataPoint_details"></div>
       </div>
-
+      
+      </div>
+      <div th:case="*">
+	<p> Please find the login button above that will allow you to chart your data. </p>
+      </div>
+      
       <p><a href="/" th:ref="@{/}">Back to home page</a></p>
     </div>
 
     <script type="text/javascript" th:src="@{/js/bpmDataFetch.js}"></script>
     <script type="text/javascript" th:src="@{/js/chartDataFetch.js}"></script>
-    <script type="text/javascript" th:src="@{/js/components/customizeChartComponents.js}"></script>
+    <script type="text/javascript" th:src="@{/js/components/updateDatapointDetails.js}"></script>
     <script type="text/javascript" th:src="@{/js/bower_components/d3/d3.min.js}"></script>
     <script type="text/javascript" th:src="@{/js/bower_components/d3-tip/index.js}"></script>
     <script type="text/javascript" th:src="@{/js/bower_components/plottable/plottable.js}"></script>
@@ -99,42 +114,95 @@
       },
       'measures': {
       'heart_rate': {
-      'seriesName': 'Heart Rate',
       'yAxis': {
       'range': undefined
       },
+      'data': {
+      'xValueQuantization': {
+      'period': OMHWebVisualizations.DataParser.QUANTIZE_MINUTE,
+      'aggregator': OMHWebVisualizations.DataParser.aggregators.mean
+      }
+      },
       'chart': {
-      'daysShownOnTimeline': { 'min': 0, 'max': 365 },
+      'type': 'Line',
+      'daysShownOnTimeline': { 'min': 0, 'max': 240 },
       'styles': [
       {
       'name': 'blue-lines',
       'plotType': 'Line',
       'attributes': {
-      'stroke': '#4BC0C0'
+      'stroke': '#4bc0c0'
       }
       }
       ]
       }
       },
       'step_count': {
-      'seriesName': 'Step Count',
       'yAxis' : {
       'range': undefined
       },
       'data': {
       'xValueQuantization': {
-      'period': OMHWebVisualizations.DataParser.QUANTIZE_MINUTE
+      'period': OMHWebVisualizations.DataParser.QUANTIZE_HOUR,
+      'aggregator': OMHWebVisualizations.DataParser.aggregators.sum
       }
       },
       'chart': {
       'type': 'clustered_bar',
-      'daysShownOnTimeline': { 'min': 0, 'max': 365 }
+      'daysShownOnTimeline': { 'min': 0, 'max': 30 },
+      'styles': [
+      {
+      'name': 'blue-lines',
+      'plotType': 'ClusteredBar',
+      'attributes': {
+      'stroke': '#4bc0c0'
+      }
+      }
+      ]
+      }
+      },
+      'minutes_moderate_activity': {
+      'yAxis' : {
+      'range': undefined
+      },
+      'data': {
+      'xValueQuantization': {
+      'period': OMHWebVisualizations.DataParser.QUANTIZE_HOUR,
+      'aggregator': OMHWebVisualizations.DataParser.aggregators.sum
+      }
+      },
+      'chart': {
+      'type': 'clustered_bar',
+      'daysShownOnTimeline': { 'min': 0, 'max': 30 },
+      'styles': [
+      {
+      'name':'blue-lines',
+      'plotType': 'ClusteredBar',
+      'attributes': {
+      'stroke': '#4bc0c0'
+      }
+      }
+      ]
       }
       }
       }
       };
       
       /* ====== UI Helper Functions ====== */
+      function cloneSettingsSetMax(obj, max) {
+      let newSettings = cloneObject(obj);
+      let yAxisRange = { 'min' : 0, 'max' : max + Math.floor(max/2) };
+      
+      if (measure === "heart_rate") {
+      newSettings.measures.heart_rate.yAxis.range = yAxisRange;
+      } else if (measure === "step_count") {
+      newSettings.measures.step_count.yAxis.range = yAxisRange;
+      } else {
+      newSettings.measures.minutes_moderate_activity.yAxis.range = yAxisRange;
+      }
+      return newSettings;
+      }
+      
       function cloneObject( object ) {
 
       return JSON.parse( JSON.stringify( object ) );
@@ -177,8 +245,7 @@
       d3.select( '.schema_name' ).property( 'disabled', false );
       d3.select( '.select_button' ).property( 'disabled', false );
       }
-
-
+	       
       function showDatapointDetailsMessage( message ) {
 
       dataPointDetails.html( '<h3>Data Point Details</h3> ' + message );
@@ -190,33 +257,32 @@
       var plots = components.plots;
       plots.forEach( function ( component ) {
 
-      if ( /*<![CDATA[*/
-      component instanceof Plottable.Components.Label &&
-      (component.yAlignment() === 'bottom') &&
-      (component.xAlignment() === 'right')
-      /*]]>*/) {
+      if (component instanceof Plottable.Components.Label) {
+      if (component.yAlignment() === 'top') {
+      if (component.xAlignment() === 'left') {
       component.yAlignment( 'top' );
-      component.xAlignment( 'left' );
-      }
-
-      if ( /*<![CDATA[*/ component instanceof Plottable.Plots.Scatter && (component.datasets().length > 0) /*]]>*/) {
-      scatterPlot = component;
+      component.xAlignment( 'right' );
+      }}}
+      
+      if (component instanceof Plottable.Plots.Scatter || component instanceof Plottable.Plots.ClusteredBar){ 
+      if (component.datasets().length > 0) {
+      componentPlot = component;
       if ( !clickInteraction ) {
       clickInteraction = new Plottable.Interactions.Click()
       .onClick( function ( point ) {
       var nearestEntity;
       try {
-      nearestEntity = scatterPlot.entityNearest( point );
-      updateDatapointDetails( nearestEntity.datum );
+      nearestEntity = componentPlot.entityNearest( point );
+      updateDatapointDetails(nearestEntity.datum);
       } catch ( e ) {
       return;
       }
       } );
       }
-
-      clickInteraction.attachTo( scatterPlot );
-      clickInteractionComponent = scatterPlot;
+      clickInteraction.attachTo( componentPlot );
+      clickInteractionComponent = componentPlot;
       showDatapointDetailsMessage( 'Click on a point to see details here...' );
+      }
       }
       } );
       }
@@ -235,17 +301,14 @@
 
       // MAKE CHART PREFLIGHT -- Preflight checks before chart construction regarding settings and data
       var makeChartPreflight = function ( data ) {
-      let chartSettings = cloneObject(settings);
       let dataMax = getMax(data);
-            
+      let chartSettings = cloneSettingsSetMax(settings, dataMax);
+      //let chartSettings = cloneObject(settings);
+      
       if (measure === "heart_rate") {
       chartSettings.interface.tooltips.visible = false;
-      chartSettings.measures.heart_rate.yAxis.range = { 'min': 0, 'max': dataMax };
       }
-
-      if (measure === "step_count") {
-      chartSettings.measures.step_count.yAxis.range = { 'min': 0, 'max': dataMax };
-      }
+      
       
       //disableUI();
 
@@ -282,6 +345,7 @@
       // Destroy chart if one is already present
       if (chart) {
       chart.destroy();
+      showDatapointDetailsMessage('Click on a point to see details here...');
       if (clickInteraction){
       if (clickInteractionComponent) {
       clickInteraction.detachFrom( clickInteractionComponent );

@@ -12,7 +12,7 @@ li a, .dropbtn {
     display: inline-block;
     color: #F2F3F4;
     text-align: center;
-    padding: 14px 16px;
+    padding: 1vw 2vw;
     text-decoration: none;
 }
 
@@ -32,26 +32,30 @@ li.dropdown {display: inline-block;}
     display: none;
     position: absolute;
     background-color: #333;
-    min-width: 155px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 }
 
 .dropdown-content a {
     color: #F2F3F4;
-    padding: 14px 16px;
+    padding: 1vw 2vw;
     text-decoration: none;
     display: block;
     text-align: left;
 }
 
-li.logout-button {
+li.logout-button, li.login-button {
     float: right;
+    display: inline-block;
+}
+
+input[type=submit] {
     background-color: #262626;
     color: #F2F3F4;
     cursor: pointer;
     border: 0 none;
-    padding-top: 14px 16px;
-    display: inline-block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 100%;
+    padding: 1vw 2vw;
 }
 
 .dropdown-content a:hover { background-color: #111; }
