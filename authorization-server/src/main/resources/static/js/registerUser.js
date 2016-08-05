@@ -14,7 +14,7 @@ newUser = function() {
 	    document.getElementById("res").innerHTML = this.statusText;
 	}
     });
-    xhr.open("POST", "http://143.229.6.40:80/users");
+    xhr.open("POST", "https://mdash.cs.vassar.edu:80/users");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("Cache-Control", "no-cache");

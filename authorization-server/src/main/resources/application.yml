@@ -18,11 +18,18 @@
 dataStore: mongo
 
 server:
-  port: 8082
+  port: 443
+  ssl:
+    enabled: true
+    key-alias: server
+    key-store: "/opt/omh-dsu-ri/authorization-server/keystore.jks"
+    key-store-password: secret
+    key-password: secret
+    protocol: TLS
 
 spring:
   application:
-    name: Open mHealth DSU authorisation server
+    name: Open mHealth DSU authorization server
   data:
     mongodb:
       host: omh-mongo

@@ -110,8 +110,9 @@ public class ClientController {
 	    grantTypes = "authorization_code";
 	}
 	String authorities = CLIENT_ROLE;
+	String redirectUri = registrationData.getRedirectUri();
 
-	BaseClientDetails baseClientDetails = new BaseClientDetails(clientId,resourceId,scopes,grantTypes,authorities);
+	BaseClientDetails baseClientDetails = new BaseClientDetails(clientId,resourceId,scopes,grantTypes,authorities, redirectUri);
 	baseClientDetails.setClientSecret(passwordEncoder.encode(registrationData.getPassword()));
 	return baseClientDetails;
     }
