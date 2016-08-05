@@ -178,6 +178,16 @@ public class DataPointController {
     }
 
 
+    /**  
+     * Reads data points for the dashboard.
+     *
+     * @param schemaNamespace the namespace of the schema the data points conform to
+     * @param schemaName the name of the schema the data points conform to
+     * @param schemaVersion the version of the schema the data points conform to 
+     * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive   
+     * @param createdBefore the latest creation timestamp of the data points to return, exclusive        
+     * @return a list of matching data points 
+     */
     
     // only allow clients with read scope to read data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
@@ -189,12 +199,14 @@ public class DataPointController {
 	       @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
 	       // TODO make this optional and update all associated code
 	       @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
+	       @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false) OffsetDateTime createdOnOrAfter,
+	       @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) OffsetDateTime createdBefore,
 	       Authentication authentication) {
 
 	// determine the user associated with the access token to restrict the search accordingly
 	String endUserId = getEndUserId(authentication);
 
-	DataPointSearchCriteria searchCriteria = createSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion, null, null);
+	DataPointSearchCriteria searchCriteria = createSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion, createdOnOrAfter, createdBefore);
 
 	Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, null, null);
 

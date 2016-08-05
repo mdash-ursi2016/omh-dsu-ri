@@ -10,13 +10,13 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
  */
 
 @Configuration
-//@EnableWebMvc
 public class WebConfiguration extends WebMvcConfigurerAdapter {
 
         @Override
 	public void addCorsMappings(CorsRegistry registry) {
+	    // Allows Dashboard to make requests to /dash/** endpoints
 	    registry.addMapping("/v1.0.M1/dash/**")
-		.allowedOrigins("http://143.229.6.40:8080")
+		.allowedOrigins("https://mdash.cs.vassar.edu:8080")
 		.allowedMethods("GET")
 		.allowedHeaders("Accept", "Cache-Control", "Authorization")
 		.allowCredentials(true).maxAge(3600)

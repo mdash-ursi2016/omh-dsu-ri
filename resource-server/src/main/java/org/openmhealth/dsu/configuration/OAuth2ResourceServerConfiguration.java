@@ -42,15 +42,13 @@ public class OAuth2ResourceServerConfiguration extends ResourceServerConfigurerA
     
     @Override
     public void configure(HttpSecurity http) throws Exception {
-	http//.requiresChannel().anyRequest().requiresSecure()
-	    //.and()
-            .authorizeRequests()
-	       .antMatchers(HttpMethod.OPTIONS, "/v1.0.M1/dash/**").permitAll()
+	http.authorizeRequests()
+	    .antMatchers(HttpMethod.OPTIONS, "/v1.0.M1/dash/**").permitAll() // Allows Dashboard to make requests
 	       .anyRequest().authenticated()
 	    .and()
 	    .headers().addHeaderWriter((request, response) -> {
-		    if (request.getMethod().equals("OPTIONS")) {
-			response.addHeader("Access-Control-Allow-Origin", "http://143.229.6.40:8080");
+		    if (request.getMethod().equals("OPTIONS")) { // Allows Dashboard to make requests
+			response.addHeader("Access-Control-Allow-Origin", "https://mdash.cs.vassar.edu:8080");
 			response.setHeader("Access-Control-Allow-Methods", "GET");
 			response.setHeader("Access-Control-Allow-Headers", "accept, authorization, cache-control");
 			response.setHeader("Access-Control-Allow-Credentials", "true");
