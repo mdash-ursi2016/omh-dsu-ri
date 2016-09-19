@@ -9,14 +9,15 @@ This repository contains the Java reference implementation of an [Open mHealth](
 
 * this repository contains a secure endpoint that offers an API for storing and retrieving data points
 * data points conform to the Open mHealth [data point schema](http://www.openmhealth.org/documentation/#/schema-docs/schema-library/schemas/omh_data-point)
-* the code consists of an [OAuth 2.0](http://oauth.net/2/) authorization server and resource server
+* the code consists of an [OAuth 2.0](http://oauth.net/2/) authorization server, resource server, and an MDash Dashboard server
 * the authorization server manages access tokens
 * the resource server implements the data point API documented [here](docs/raml/API.yml)
 * the servers are written in Java using the [Spring Framework](http://projects.spring.io/spring-framework/), [Spring Security OAuth 2.0](http://projects.spring.io/spring-security-oauth/) and [Spring Boot](http://projects.spring.io/spring-boot/)
 * the authorization server needs [PostgreSQL](http://www.postgresql.org/) to store client credentials and access tokens, and [MongoDB](http://www.mongodb.org/) to store user accounts
 * the resource server needs PostgreSQL to read access tokens and MongoDB to store data points
-* you can get everything up and running in a few commands using Docker Compose
-* you can pull Docker containers for both servers from our [Docker Hub page](https://registry.hub.docker.com/repos/openmhealth/)
+* the dashboard server acts as a client and accesses resources with [OAuth 2.0](http://oauth.net/2/) authorization code grant flow.
+* you can get everything up and running in a few commands using Docker Compose, but the URLs on the views will need to be changed
+* you can pull Docker containers for the original Authorization and Resource servers from the Open mHealth [Docker Hub page](https://registry.hub.docker.com/repos/openmhealth/) and visit the Open mHealth Github to see the [reference implementation.](https://github.com/openmhealth/omh-dsu-ri) 
 * you can use a Postman [collection](https://www.getpostman.com/collections/18e6065476d59772c748) to easily issue API requests
   
 ### Overview
@@ -61,7 +62,8 @@ Now, if you want to use pre-built Docker containers,
 1. Run `docker-compose -f docker-compose-init-postgres.yml up -d` to download and run the containers.
   * If you want to keep the containers in the foreground and see logs, omit the `-d`.
   * If you want to just want to see logs, run `docker-compose -f docker-compose-init-postgres.yml logs`.
-
+  * NOTE: you will first have to replace the sample keystore in each docker directory with your own keystore, and make the necessary edits in the application.yml file (src/main/resources/application.yml), under ssl, for each server.
+  
 Otherwise, if you prefer to build and run your own containers, e.g. to customize them,
 
 1. Run `./gradlew build -x test` to compile the code while skipping tests.
@@ -70,7 +72,8 @@ Otherwise, if you prefer to build and run your own containers, e.g. to customize
   * If you want to keep the containers in the foreground and see logs, omit the `-d`.
   * If you want to just want to see logs, run `docker-compose -f docker-compose-build.yml logs`.
 
-The authorization and resource servers will start running on ports 8082 and 8083, respectively.
+The authorization and resource servers will start running on ports 443 and 8083, respectively.
+The dashboard server will start running on port 8080.
 It can take up to a minute for the containers to start up.
 
 #### Option 2. Building from source and running natively
@@ -149,7 +152,9 @@ The authorization server includes a simple RESTful endpoint to create users. To 
 curl -H "Content-Type:application/json" --data '{"username": "testUser", "password": "testUserPassword"}' http://host:8082/users
 ```
 
-or use the *create an end-user/success or conflict* request in the Postman collection discussed [below](#issuing-requests-with-postman).
+or use the *create an end-user/success or conflict* request in the Postman collection discussed [below](#issuing-requests-with-postman)
+
+or use the https://{yourDomain}:443/users endpoint to create a user with the front-end view.
 
 The user creation endpoint is primitive by design; it is only meant as a way to bootstrap a couple users
 when first starting out. In general, the creation of users is typically the concern of a user management component,
@@ -240,31 +245,3 @@ A data point looks something like this
 ```
 
 We may add documentation here if we find that the Postman collection isn't sufficient.
-
-
-### Roadmap
-
-The following features are scheduled for future milestones
-
-* support the client credentials grant type
-* improve test coverage
-* support refresh tokens
-* make it easier to customise the authorization code and implicit grant forms
-* support SSL out of the box
-* filter data points based on effective time frames
-* filter data points based on their bodies
-
-If you have other feature requests, [create an issue for each](https://github.com/openmhealth/omh-dsu-ri/issues)
-and we'll figure out how to prioritise them.
-
-
-### Contributing
-
-If you'd like to contribute any code
-
-1. [Open an issue](https://github.com/openmhealth/omh-dsu-ri/issues) to let us know what you're going to work on.
-  1. This lets us give you feedback early and lets us put you in touch with people who can help.
-2. Fork this repository.
-3. Create your feature branch `feature/do-x-y-z` from the `develop` branch.
-4. Commit and push your changes to your fork.
-5. Create a pull request.
